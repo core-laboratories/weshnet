@@ -43,7 +43,7 @@ func NewRingStream(filters, format string, ring *zapring.Core) Stream {
 // NewFileStream creates a new file stream backed by Lumberjack with sane default values.
 //
 // Usually, Lumberjack is used as a rolling log file and is intended to be reused from a session to another,
-// In Berty, we want one file per session named with the start time instead of the rotation time.
+// Use one file per session named with the start time instead of the rotation time.
 //
 // If the provided path is a directory, it will create files in that directory with the following pattern:
 // `<path>/<session-kind>-<start-time>.log`.

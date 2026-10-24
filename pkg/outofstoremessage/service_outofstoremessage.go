@@ -12,12 +12,12 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"berty.tech/weshnet/v2"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/grpcutil"
-	"berty.tech/weshnet/v2/pkg/outofstoremessagetypes"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/grpcutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/outofstoremessagetypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
 )
 
 type OOSMService interface {

@@ -1,7 +1,7 @@
 // +build darwin,!noproximitytransport
 //
 //  PeerManager.m
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 29/04/2021.
 //
@@ -48,7 +48,7 @@
     }
 }
 
-- (ConnectedPeer *__nullable)registerDevice:(BertyDevice *__nonnull)device withPeerID:(NSString *__nonnull)peerID isClient:(BOOL)isClient {
+- (ConnectedPeer *__nullable)registerDevice:(WeshDevice *__nonnull)device withPeerID:(NSString *__nonnull)peerID isClient:(BOOL)isClient {
     [self.logger d:@"registerDevice called: identifier=%@ peer=%@ isClient=%d", [self.logger SensitiveNSObject:[device getIdentifier]], [self.logger SensitiveNSObject:peerID], isClient];
 
     ConnectedPeer *peer;
@@ -76,7 +76,7 @@
     return peer;
 }
 
-- (void)unregisterDevice:(BertyDevice *)device {
+- (void)unregisterDevice:(WeshDevice *)device {
     [self.logger d:@"unregisterDevice called: device=%@ peerID=%@", [self.logger SensitiveNSObject:[device getIdentifier]], [self.logger SensitiveNSObject:device.remotePeerID]];
 
     ConnectedPeer *peer;

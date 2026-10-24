@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"sync"
 
+	"berty.tech/go-ipfs-log/enc"
+	"berty.tech/go-ipfs-log/entry"
+	"berty.tech/go-orbit-db/iface"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 	"google.golang.org/protobuf/proto"
 
-	"berty.tech/go-ipfs-log/enc"
-	"berty.tech/go-ipfs-log/entry"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/rendezvous"
-	"berty.tech/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
 )
 
 type PeerDeviceGroup struct {

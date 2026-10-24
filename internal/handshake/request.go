@@ -9,10 +9,10 @@ import (
 	"golang.org/x/crypto/nacl/box"
 	"google.golang.org/protobuf/proto"
 
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protoio"
-	"berty.tech/weshnet/v2/pkg/tyber"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
+	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
 )
 
 // RequestUsingReaderWriter init a handshake with the responder, using provided io reader and writer

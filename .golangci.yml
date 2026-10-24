@@ -60,7 +60,6 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(berty.tech)
   exclusions:
     generated: lax
     paths:

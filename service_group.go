@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"berty.tech/go-orbit-db/iface"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"go.uber.org/zap"
 
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
 )
 
 func (s *service) getContactGroup(key crypto.PubKey) (*protocoltypes.Group, error) {

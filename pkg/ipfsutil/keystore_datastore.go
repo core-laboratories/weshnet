@@ -7,7 +7,7 @@ import (
 	keystore "github.com/ipfs/go-ipfs-keystore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
 type datastoreKeystore struct {

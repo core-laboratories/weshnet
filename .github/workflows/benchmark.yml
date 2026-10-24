@@ -1,4 +1,11 @@
 name: Go benchmark
+
+permissions:
+  contents: read
+
+concurrency:
+  group: benchmark-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     tags:
@@ -25,33 +32,22 @@ jobs:
     name: Run benchmarks
     runs-on: ubuntu-latest
     steps:
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
-        with:
-          asdf_version: 0.16.7
-
       - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v1
+        uses: ts-graphviz/setup-graphviz@b1de5da23ed0a6d14e0aeee8ed52fdd87af2363c # v2.0.2
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50 # this is to make sure we obtain the target base commit#
 
-      - name: Setup go
-        run: |
-          asdf plugin add golang
-          asdf install golang
-          echo "go_version=$(asdf current golang | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
-          go install golang.org/x/perf/cmd/benchstat@latest
-          asdf reshim golang
-
-      - name: Cache go modules
-        uses: actions/cache@v4
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Install benchstat
+        run: go install golang.org/x/perf/cmd/benchstat@latest
 
       - name: Run benchmark
         run: make go.unittest | tee output_head.txt
@@ -64,14 +60,6 @@ jobs:
       - name: Checkout base commit
         run: git checkout ${{ github.event.pull_request.base.sha }}
         if: github.event_name == 'pull_request'
-
-      - name: Cache go modules (main)
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
 
       - name: Run benchmark (main)
         run: make go.unittest | tee output_base.txt
@@ -196,15 +184,15 @@ jobs:
       # upload arifacts
       #
       - name: upload artifact (main)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: github.ref == 'refs/heads/main'
         with:
           name: "bench-main"
-          path: go/pprof_html
+          path: pprof_html
 
       - name: upload artifact (PR)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: github.event_name == 'pull_request'
         with:
           name: "bench-${{ github.event.pull_request.number  }}"
-          path: go/pprof_html
+          path: pprof_html

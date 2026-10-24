@@ -9,7 +9,7 @@ SHELL ["/bin/bash", "-c"]
 RUN     git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0 && \
         echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 # install compilers
-WORKDIR $GOPATH/src/berty.tech/weshnet
+WORKDIR $GOPATH/src/github.com/core-laboratories/weshnet
 COPY    go.mod go.sum .tool-versions ./
 # ensure modifications to bashrc are properly sourced
 ENV     BASH_ENV=~/.bashrc

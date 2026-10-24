@@ -3,10 +3,10 @@ package weshnet
 import (
 	"context"
 
+	"berty.tech/go-ipfs-log/identityprovider"
 	"github.com/libp2p/go-libp2p/core/crypto"
 
-	"berty.tech/go-ipfs-log/identityprovider"
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
 const (
@@ -15,32 +15,32 @@ const (
 	identityType       = "betry_group_entry"
 )
 
-type bertySignedIdentityProvider struct {
-	keyStore *BertySignedKeyStore
+type weshSignedIdentityProvider struct {
+	keyStore *WeshSignedKeyStore
 }
 
-func (b *bertySignedIdentityProvider) UnmarshalPublicKey(data []byte) (crypto.PubKey, error) {
+func (b *weshSignedIdentityProvider) UnmarshalPublicKey(data []byte) (crypto.PubKey, error) {
 	return crypto.UnmarshalPublicKey(data)
 }
 
-func (b *bertySignedIdentityProvider) GetID(_ context.Context, opts *identityprovider.CreateIdentityOptions) (string, error) {
+func (b *weshSignedIdentityProvider) GetID(_ context.Context, opts *identityprovider.CreateIdentityOptions) (string, error) {
 	return opts.ID, nil
 }
 
 //nolint:revive
-func (b *bertySignedIdentityProvider) SignIdentity(ctx context.Context, data []byte, id string) ([]byte, error) {
+func (b *weshSignedIdentityProvider) SignIdentity(ctx context.Context, data []byte, id string) ([]byte, error) {
 	return nil, nil
 }
 
-func (b *bertySignedIdentityProvider) GetType() string {
+func (b *weshSignedIdentityProvider) GetType() string {
 	return identityType
 }
 
-func (b *bertySignedIdentityProvider) VerifyIdentity(*identityprovider.Identity) error {
+func (b *weshSignedIdentityProvider) VerifyIdentity(*identityprovider.Identity) error {
 	return nil
 }
 
-func (b *bertySignedIdentityProvider) Sign(ctx context.Context, identity *identityprovider.Identity, bytes []byte) ([]byte, error) {
+func (b *weshSignedIdentityProvider) Sign(ctx context.Context, identity *identityprovider.Identity, bytes []byte) ([]byte, error) {
 	key, err := b.keyStore.GetKey(ctx, identity.ID)
 	if err != nil {
 		return nil, errcode.ErrCode_TODO.Wrap(err)
@@ -54,7 +54,7 @@ func (b *bertySignedIdentityProvider) Sign(ctx context.Context, identity *identi
 	return sig, nil
 }
 
-func (b *bertySignedIdentityProvider) signID(ctx context.Context, id string) (crypto.PubKey, []byte, error) {
+func (b *weshSignedIdentityProvider) signID(ctx context.Context, id string) (crypto.PubKey, []byte, error) {
 	privKey, err := b.keyStore.GetKey(ctx, id)
 	if err != nil {
 		return nil, nil, err
@@ -68,7 +68,7 @@ func (b *bertySignedIdentityProvider) signID(ctx context.Context, id string) (cr
 	return privKey.GetPublic(), idSignature, nil
 }
 
-func (b *bertySignedIdentityProvider) createIdentity(ctx context.Context, options *identityprovider.CreateIdentityOptions) (*identityprovider.Identity, error) {
+func (b *weshSignedIdentityProvider) createIdentity(ctx context.Context, options *identityprovider.CreateIdentityOptions) (*identityprovider.Identity, error) {
 	id, err := b.GetID(ctx, options)
 	if err != nil {
 		return nil, err
@@ -106,4 +106,4 @@ func (b *bertySignedIdentityProvider) createIdentity(ctx context.Context, option
 	}, nil
 }
 
-var _ identityprovider.Interface = (*bertySignedIdentityProvider)(nil)
+var _ identityprovider.Interface = (*weshSignedIdentityProvider)(nil)

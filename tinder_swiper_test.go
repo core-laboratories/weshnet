@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/rendezvous"
-	"berty.tech/weshnet/v2/pkg/testutil"
-	"berty.tech/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
 )
 
 func TestAnnounceWatchForPeriod(t *testing.T) {

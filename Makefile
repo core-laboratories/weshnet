@@ -13,7 +13,7 @@ CI ?= false
 BUILD_DATE ?= `date +%s`
 VCS_REF ?= `git rev-parse --short HEAD`
 VERSION ?= `go run github.com/mdomke/git-semver/v5`
-LDFLAGS ?= -ldflags="-X berty.tech/weshnet/internal/bertyversion.VcsRef=$(VCS_REF) -X berty.tech/weshnet/internal/bertyversion.Version=$(VERSION)"
+LDFLAGS ?= -ldflags="-X github.com/core-laboratories/weshnet/v2/internal/weshversion.VcsRef=$(VCS_REF) -X github.com/core-laboratories/weshnet/v2/internal/weshversion.Version=$(VERSION)"
 
 # @FIXME(gfanton): on macOS Monterey (12.0.x) we currently need to set the
 # environment variable `MallocNanoZone` to 0 to avoid a SIGABRT or SIGSEGV
@@ -49,15 +49,15 @@ unittest: go.unittest
 .PHONY: unittest
 
 
-generate: pb.generate docs.generate
+generate: pb.generate
 .PHONY: generate
 
 
-regenerate: gen.clean docs.clean generate docs.generate
+regenerate: gen.clean generate
 .PHONY: regenerate
 
 
-clean: gen.clean docs.clean
+clean: gen.clean
 	rm -rf out/
 .PHONY: clean
 
@@ -150,11 +150,11 @@ $(gen_sum): $(gen_src)
 	  docker run \
 		--user="$$uid" \
 		--volume="`go env GOPATH`/pkg/mod:/go/pkg/mod" \
-		--volume="$(PWD):/go/src/berty.tech/weshnet" \
-		--workdir="/go/src/berty.tech/weshnet" \
+		--volume="$(PWD):/go/src/github.com/core-laboratories/weshnet" \
+		--workdir="/go/src/github.com/core-laboratories/weshnet" \
 		--entrypoint="sh" \
 		--rm \
-		bertytech/buf:5 \
+		bufbuild/buf:1.75.0 \
 		-xec 'make generate_local'; \
 	  $(MAKE) tidy \
 	)
@@ -176,7 +176,7 @@ generate_local:
 
 go.fmt:
 	go run github.com/daixiang0/gci write . \
-		--skip-generated -s 'standard,default,prefix(berty.tech)'
+		--skip-generated -s 'standard,default,prefix(github.com/core-laboratories)'
 	go run mvdan.cc/gofumpt -w .
 
 .PHONY: go.fmt
@@ -191,20 +191,6 @@ gen.clean:
 
 pb.push:
 	buf push api/protocol
-
-##
-## Docs gen
-##
-
-
-docs.generate:
-	cd docs; $(MAKE) generate
-.PHONY: docs.generate
-
-docs.clean:
-	cd docs; $(MAKE) clean
-.PHONY: docs.generate
-
 
 asdf.install_plugins:
 	$(call check-program, asdf)

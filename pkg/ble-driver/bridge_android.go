@@ -5,7 +5,7 @@ package ble
 import (
 	"go.uber.org/zap"
 
-	proximity "berty.tech/weshnet/v2/pkg/proximitytransport"
+	proximity "github.com/core-laboratories/weshnet/v2/pkg/proximitytransport"
 )
 
 // Supported is used by main package as default value for enable the BLE  driver.
@@ -14,7 +14,7 @@ import (
 const Supported = true
 
 // Noop implementation for Android
-// Real driver is given from Java directly here: berty/js/android/app/src/main/java/tech/berty/gobridge/bledriver
+// The real driver is provided by the embedding Android application.
 func NewDriver(logger *zap.Logger) proximity.ProximityDriver {
 	logger = logger.Named("BLE")
 	logger.Info("NewDriver(): Java driver not found")

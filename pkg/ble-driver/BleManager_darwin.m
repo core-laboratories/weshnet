@@ -4,7 +4,7 @@
 //  ble
 //
 //  Created by sacha on 23/05/2019.
-//  Copyright © 2019 berty. All rights reserved.
+//  Copyright © 2019 wesh. All rights reserved.
 //
 
 #import "BleManager_darwin.h"
@@ -123,10 +123,10 @@ static inline char itoh(int i) {
                              value:nil
                              permissions:CBAttributePermissionsWriteable];
 
-    _bertyService = [[CBMutableService alloc] initWithType:self.serviceUUID
+    _weshService = [[CBMutableService alloc] initWithType:self.serviceUUID
                                                    primary:YES];
 
-    _bertyService.characteristics = [@[self.writerCharacteristic,
+    _weshService.characteristics = [@[self.writerCharacteristic,
                                        self.peerIDCharacteristic] retain];
 }
 
@@ -143,8 +143,8 @@ static inline char itoh(int i) {
     [_writerUUID release];
     [_peerIDCharacteristic release];
     [_writerCharacteristic release];
-    [_bertyService.characteristics release];
-    [_bertyService release];
+    [_weshService.characteristics release];
+    [_weshService release];
 
     [super dealloc];
 }
@@ -156,7 +156,7 @@ static inline char itoh(int i) {
         [self.logger e:@"addService error: timeout"];
     }];
     if (self.cmEnable && self.pmEnable) {
-        [self.pManager addService:self.bertyService];
+        [self.pManager addService:self.weshService];
         [self.serviceAdded await];
     }
 }
@@ -269,7 +269,7 @@ static inline char itoh(int i) {
 }
 
 // Only the client side can disconnect
-- (void)disconnect:(BertyDevice *__nonnull)device {
+- (void)disconnect:(WeshDevice *__nonnull)device {
     [self.logger d:@"closeAllConnections called: debice=%@", [self.logger SensitiveNSObject:[device clientSideIdentifier]]];
 
     if (device.peripheral != nil && device.clientSideIdentifier != nil) {
@@ -281,7 +281,7 @@ static inline char itoh(int i) {
             return ;
         }
     } else {
-        [device closeBertyDevice];
+        [device closeWeshDevice];
     }
 }
 
@@ -290,14 +290,14 @@ static inline char itoh(int i) {
 
     if (self.cmEnable) {
         @synchronized (self.bDevices) {
-            for (BertyDevice *device in self.bDevices) {
+            for (WeshDevice *device in self.bDevices) {
                 [self disconnect:device];
             }
         }
     }
 }
 
-- (BOOL)writeAndNotify:(BertyDevice *__nonnull)device data:(NSData *__nonnull)data {
+- (BOOL)writeAndNotify:(WeshDevice *__nonnull)device data:(NSData *__nonnull)data {
     [self.logger d:@"writeAndNotify: device=%@ base64=%@", [self.logger SensitiveNSObject:[device clientSideIdentifier]], [self.logger SensitiveNSObject:[data base64EncodedStringWithOptions:0]]];
     if ([self.logger showSensitiveData]) {
         [BleManager printLongLog:[BleManager NSDataToHex:data]];
@@ -361,13 +361,13 @@ static inline char itoh(int i) {
     return success;
 }
 
-#pragma mark - BertyDevice dict helper
+#pragma mark - WeshDevice dict helper
 
-- (BertyDevice *)findPeripheral:(CBPeripheral *)peripheral {
-    BertyDevice *result = nil;
+- (WeshDevice *)findPeripheral:(CBPeripheral *)peripheral {
+    WeshDevice *result = nil;
 
     @synchronized (self.bDevices) {
-        for (BertyDevice *bDevice in self.bDevices) {
+        for (WeshDevice *bDevice in self.bDevices) {
             if (bDevice.peripheral == peripheral) {
                 result = bDevice;
                 break;
@@ -378,9 +378,9 @@ static inline char itoh(int i) {
     return result;
 }
 
-- (BertyDevice *)findPeripheralFromName:(NSString *) name {
+- (WeshDevice *)findPeripheralFromName:(NSString *) name {
     @synchronized (self.bDevices) {
-        for (BertyDevice *bDevice in self.bDevices) {
+        for (WeshDevice *bDevice in self.bDevices) {
             if ([bDevice.name isEqualToString:name]) {
                 return bDevice;
             }
@@ -390,11 +390,11 @@ static inline char itoh(int i) {
     return nil;
 }
 
-- (BertyDevice *)findPeripheralFromPID:(NSString *)peerID {
-    BertyDevice *result = nil;
+- (WeshDevice *)findPeripheralFromPID:(NSString *)peerID {
+    WeshDevice *result = nil;
 
     @synchronized (self.bDevices) {
-        for (BertyDevice *bDevice in self.bDevices) {
+        for (WeshDevice *bDevice in self.bDevices) {
             if ([bDevice.remotePeerID isEqualToString:peerID]) {
                 result = bDevice;
                 break;
@@ -406,12 +406,12 @@ static inline char itoh(int i) {
 }
 
 
-- (BertyDevice *)findPeripheralFromIdentifier:(NSUUID *)identifier {
-    BertyDevice *result = nil;
+- (WeshDevice *)findPeripheralFromIdentifier:(NSUUID *)identifier {
+    WeshDevice *result = nil;
     NSString *id = [identifier UUIDString];
 
     @synchronized (self.bDevices) {
-        for (BertyDevice *bDevice in self.bDevices) {
+        for (WeshDevice *bDevice in self.bDevices) {
             if ([bDevice.clientSideIdentifier isEqual:id]) {
                 result = bDevice;
                 break;
@@ -430,7 +430,7 @@ static inline char itoh(int i) {
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
     [self.logger i:@"didConnectPeripheral called: device=%@", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]]];
 
-    BertyDevice *bDevice = [self findPeripheral:peripheral];
+    WeshDevice *bDevice = [self findPeripheral:peripheral];
     if (bDevice == nil) {
         [self.logger e:@"didConnectPeripheral error: device=%@ not found", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]]];
         [self.cManager cancelPeripheralConnection:peripheral];
@@ -442,7 +442,7 @@ static inline char itoh(int i) {
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     [self.logger i:@"didFailToConnectPeripheral called: device=%@", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]]];
 
-    BertyDevice *bDevice = [self findPeripheral:peripheral];
+    WeshDevice *bDevice = [self findPeripheral:peripheral];
     if (bDevice == nil) {
         [self.logger e:@"didFailToConnectPeripheral error: device=%@ not found", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]]];
         return ;
@@ -488,7 +488,7 @@ static inline char itoh(int i) {
         return ;
     }
 
-    BertyDevice *nDevice = [self findPeripheralFromIdentifier:peripheral.identifier];
+    WeshDevice *nDevice = [self findPeripheralFromIdentifier:peripheral.identifier];
     if (nDevice != nil) { // peripheral already known
         if (nDevice.clientSideIdentifier != nil) { // peripheral already discovered
             return ;
@@ -507,7 +507,7 @@ static inline char itoh(int i) {
 
         // TODO: retest if bDevices is still null after @synchronized
         @synchronized (self.bDevices) {
-            nDevice = [[BertyDevice alloc]initWithPeripheral:peripheral logger:self.logger central:self withName:id];
+            nDevice = [[WeshDevice alloc]initWithPeripheral:peripheral logger:self.logger central:self withName:id];
             [self.bDevices addObject:nDevice];
             [nDevice release];
             [self.logger d:@"didDiscoverPeripheral: device=%@ added to BleManager.bDevices", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]]];
@@ -520,9 +520,9 @@ static inline char itoh(int i) {
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
     [self.logger i:@"didDisconnectPeripheral called: device=%@ error=%@", [self.logger SensitiveNSObject:[peripheral.identifier UUIDString]], error];
 
-    BertyDevice *device = [self findPeripheral:peripheral];
+    WeshDevice *device = [self findPeripheral:peripheral];
     if (device != nil) {
-        [device closeBertyDevice];
+        [device closeWeshDevice];
         @synchronized (self.bDevices) {
             [self.bDevices removeObject:device];
         }
@@ -615,7 +615,7 @@ static inline char itoh(int i) {
 - (void)peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didSubscribeToCharacteristic:(CBCharacteristic *)characteristic {
     [self.logger d:@"peripheralManager didSubscribeToCharacteristic called: device=%@", [self.logger SensitiveNSObject:[central.identifier UUIDString]]];
 
-    BertyDevice *device;
+    WeshDevice *device;
     if ((device = [self findPeripheralFromIdentifier:central.identifier]) == nil) {
         [self.logger e:@"peripheralManager didSubscribeToCharacteristic error: device=%@ not found", [self.logger SensitiveNSObject:[central.identifier UUIDString]]];
         return ;
@@ -641,13 +641,13 @@ static inline char itoh(int i) {
 - (void)peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didUnsubscribeFromCharacteristic:(CBCharacteristic *)characteristic {
     [self.logger d:@"peripheralManager didUnsubscribeFromCharacteristic called: device=%@", [self.logger SensitiveNSObject:[central.identifier UUIDString]]];
 
-    BertyDevice *device;
+    WeshDevice *device;
     if ((device = [self findPeripheralFromIdentifier:central.identifier]) == nil) {
         [self.logger e:@"peripheralManager didUnsubscribeFromCharacteristic error: device=%@ not found", [self.logger SensitiveNSObject:[central.identifier UUIDString]]];
         return ;
     }
 
-    [device closeBertyDevice];
+    [device closeWeshDevice];
     @synchronized (self.bDevices) {
         [self.bDevices removeObject:device];
     }
@@ -703,7 +703,7 @@ static inline char itoh(int i) {
     if ([request.characteristic.UUID isEqual:self.peerUUID]) {
         [self.logger d:@"didReceiveReadRequests: device=%@: use peerID characteristic", [self.logger SensitiveNSObject:[request.central.identifier UUIDString]]];
 
-        BertyDevice *device = [self findPeripheralFromIdentifier:request.central.identifier];
+        WeshDevice *device = [self findPeripheralFromIdentifier:request.central.identifier];
         if (device == nil || device.remotePeerID == nil) {
             [self.logger e:@"didReceiveReadRequests: device=%@: need writeRequest completed before readRequest", [self.logger SensitiveNSObject:[request.central.identifier UUIDString]]];
             [peripheral respondToRequest:request withResult:CBATTErrorReadNotPermitted];
@@ -730,7 +730,7 @@ static inline char itoh(int i) {
 
 - (void)peripheralManager:(CBPeripheralManager *)peripheral didReceiveWriteRequests:(NSArray<CBATTRequest *> *)requests {
 
-    BertyDevice *device;
+    WeshDevice *device;
     NSData *data = nil;
 
     for (CBATTRequest *request in requests) {
@@ -745,7 +745,7 @@ static inline char itoh(int i) {
             // check if we hold a remote device of this type
             device = [self findPeripheralFromIdentifier:request.central.identifier];
             if (device == nil) {
-                device = [[BertyDevice alloc]initWithIdentifier:[request.central.identifier UUIDString] logger:self.logger central:self asClient:FALSE];
+                device = [[WeshDevice alloc]initWithIdentifier:[request.central.identifier UUIDString] logger:self.logger central:self asClient:FALSE];
                 [self.bDevices addObject:device];
                 [device release];
                 [self.logger d:@"didReceiveWriteRequests: device=%@ added to BleManager.bDevices", [self.logger SensitiveNSObject:[request.central.identifier UUIDString]]];
@@ -759,7 +759,7 @@ static inline char itoh(int i) {
             characteristic = self.peerIDCharacteristic;
         } else {
             [self.logger e:@"didReceiveWriteRequests error: device=%@: bad characteristic requested", [self.logger SensitiveNSObject:[request.central.identifier UUIDString]]];
-            [device closeBertyDevice];
+            [device closeWeshDevice];
             [peripheral respondToRequest:request withResult:CBATTErrorWriteNotPermitted];
             return ;
         }
@@ -769,7 +769,7 @@ static inline char itoh(int i) {
         BOOL(^handler)(NSData *) = [device.characteristicHandlers objectForKey:[request.characteristic.UUID UUIDString]];
         if (!handler(data)) {
             [self.logger e:@"didReceiveWriteRequests error: device=%@: handle failed", [self.logger SensitiveNSObject:[request.central.identifier UUIDString]]];
-            [device closeBertyDevice];
+            [device closeWeshDevice];
             [peripheral respondToRequest:request withResult:CBATTErrorWriteNotPermitted];
         }
 
@@ -804,7 +804,7 @@ static inline char itoh(int i) {
         return ;
     }
 
-    BertyDevice *device;
+    WeshDevice *device;
     if ((device = [self findPeripheralFromIdentifier:channel.peer.identifier]) == nil) {
         [self.logger e:@"peripheralManager didOpenL2CAPChannel error: device=%@ not found", [self.logger SensitiveNSObject:[channel.peer.identifier UUIDString]]];
         return ;

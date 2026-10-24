@@ -6,7 +6,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"berty.tech/weshnet/v2/internal/queue"
+	"github.com/core-laboratories/weshnet/v2/internal/queue"
 )
 
 const messageMetricNamespace = "bty_store_message"

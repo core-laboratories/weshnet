@@ -17,9 +17,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
 
 func TestMetadataStoreSecret_Basic(t *testing.T) {
@@ -40,8 +40,8 @@ func TestMetadataStoreSecret_Basic(t *testing.T) {
 	msA := peers[0].GC.MetadataStore()
 	msB := peers[1].GC.MetadataStore()
 
-	go waitForBertyEventType(ctx, t, msA, protocoltypes.EventType_EventTypeGroupDeviceChainKeyAdded, 2, secretsAdded)
-	go waitForBertyEventType(ctx, t, msB, protocoltypes.EventType_EventTypeGroupDeviceChainKeyAdded, 2, secretsAdded)
+	go waitForWeshEventType(ctx, t, msA, protocoltypes.EventType_EventTypeGroupDeviceChainKeyAdded, 2, secretsAdded)
+	go waitForWeshEventType(ctx, t, msB, protocoltypes.EventType_EventTypeGroupDeviceChainKeyAdded, 2, secretsAdded)
 	inviteAllPeersToGroup(ctx, t, peers, groupSK)
 
 	devPkA := peers[0].GC.DevicePubKey()
@@ -95,7 +95,7 @@ func testMemberStore(t *testing.T, memberCount, deviceCount int) {
 	done := make(chan struct{})
 
 	for _, peer := range peers {
-		go waitForBertyEventType(ctx, t, peer.GC.MetadataStore(), protocoltypes.EventType_EventTypeGroupMemberDeviceAdded, len(peers), done)
+		go waitForWeshEventType(ctx, t, peer.GC.MetadataStore(), protocoltypes.EventType_EventTypeGroupMemberDeviceAdded, len(peers), done)
 	}
 
 	for i, peer := range peers {
@@ -706,10 +706,10 @@ func TestFlappyMultiDevices_Basic(t *testing.T) {
 	}
 
 	syncChan := make(chan struct{})
-	go waitForBertyEventType(ctx, t, meta[pi[0][0]], protocoltypes.EventType_EventTypeAccountContactRequestOutgoingEnqueued, 1, syncChan)
-	go waitForBertyEventType(ctx, t, meta[pi[0][1]], protocoltypes.EventType_EventTypeAccountContactRequestOutgoingEnqueued, 1, syncChan)
-	go waitForBertyEventType(ctx, t, meta[pi[1][0]], protocoltypes.EventType_EventTypeAccountContactRequestIncomingReceived, 1, syncChan)
-	go waitForBertyEventType(ctx, t, meta[pi[1][1]], protocoltypes.EventType_EventTypeAccountContactRequestIncomingReceived, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[0][0]], protocoltypes.EventType_EventTypeAccountContactRequestOutgoingEnqueued, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[0][1]], protocoltypes.EventType_EventTypeAccountContactRequestOutgoingEnqueued, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[1][0]], protocoltypes.EventType_EventTypeAccountContactRequestIncomingReceived, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[1][1]], protocoltypes.EventType_EventTypeAccountContactRequestIncomingReceived, 1, syncChan)
 
 	// Add peers to contact
 	// Enqueuing outgoing
@@ -755,8 +755,8 @@ func TestFlappyMultiDevices_Basic(t *testing.T) {
 	// Activate group for 2nd peer's 1st device
 	groups = meta[pi[1][0]].ListMultiMemberGroups()
 	require.Len(t, groups, 0)
-	go waitForBertyEventType(ctx, t, meta[pi[1][0]], protocoltypes.EventType_EventTypeAccountGroupJoined, 1, syncChan)
-	go waitForBertyEventType(ctx, t, meta[pi[1][1]], protocoltypes.EventType_EventTypeAccountGroupJoined, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[1][0]], protocoltypes.EventType_EventTypeAccountGroupJoined, 1, syncChan)
+	go waitForWeshEventType(ctx, t, meta[pi[1][1]], protocoltypes.EventType_EventTypeAccountGroupJoined, 1, syncChan)
 	_, err = meta[pi[1][0]].GroupJoin(ctx, peers[pi[1][0]].GC.group)
 	require.NoError(t, err)
 	for i := 0; i < 2; i++ {

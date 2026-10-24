@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	berty_rendezvous "berty.tech/weshnet/v2/pkg/rendezvous"
+	weshRendezvous "github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
 )
 
 func MakeRendezvousServiceTest(ctx context.Context, host host.Host, path string, rzs ...rendezvous.RendezvousSync) (*rendezvous.RendezvousService, error) {
@@ -33,7 +33,7 @@ func getEmitterRendezvousClients(ctx context.Context, t *testing.T, hosts []host
 
 	clients := make([]rendezvous.RendezvousClient, len(hosts)-1)
 	for i, host := range hosts[1:] {
-		syncClient := berty_rendezvous.NewEmitterClient(nil)
+		syncClient := weshRendezvous.NewEmitterClient(nil)
 		t.Cleanup(func() {
 			syncClient.Close()
 		})
@@ -71,7 +71,7 @@ func TestEmitterIOFlow(t *testing.T) {
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)
 
-	emitterPubSubSync, err := berty_rendezvous.NewEmitterServer(serverAddr, adminKey, &berty_rendezvous.EmitterOptions{
+	emitterPubSubSync, err := weshRendezvous.NewEmitterServer(serverAddr, adminKey, &weshRendezvous.EmitterOptions{
 		Logger: logger.Named("emitter"),
 	})
 	require.NoError(t, err)

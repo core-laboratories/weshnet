@@ -10,7 +10,7 @@ import (
 	"moul.io/u"
 	"moul.io/zapfilter"
 
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
 const (

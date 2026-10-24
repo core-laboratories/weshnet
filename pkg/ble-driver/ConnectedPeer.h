@@ -1,6 +1,6 @@
 //
 //  ConnectedPeer.h
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 29/04/2021.
 //
@@ -9,12 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BertyDevice;
+@class WeshDevice;
 
 @interface ConnectedPeer : NSObject
 
-@property (nonatomic, assign, nullable) BertyDevice *client;
-@property (nonatomic, assign, nullable) BertyDevice *server;
+@property (nonatomic, assign, nullable) WeshDevice *client;
+@property (nonatomic, assign, nullable) WeshDevice *server;
 @property (readwrite, getter=isConnected) BOOL connected;
 
 - (BOOL)isClientReady;

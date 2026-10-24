@@ -1,15 +1,18 @@
-version: '3.7'
-
 services:
   relay:
-    image: relay
-    restart: on-failure
+    image: weshnet-relay:0.5.0
+    restart: unless-stopped
     volumes:
-      - ./config.json:/etc/daemon-config.json
-      - ./data:/etc/daemon
+      - type: bind
+        source: ./config.json
+        target: /etc/daemon-config.json
+        read_only: true
+      - type: bind
+        source: ./data
+        target: /etc/daemon
     command:
       - -id=/etc/daemon/id.key
       - -config=/etc/daemon-config.json
     ports:
-      - 6363:6363
-      - 6363:6363/udp
+      - "6363:6363/tcp"
+      - "6363:6363/udp"

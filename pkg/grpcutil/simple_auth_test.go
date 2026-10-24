@@ -42,6 +42,14 @@ func SayHelloAuthenticated(ctx context.Context, request *pb.HelloRequest) (*pb.H
 	return &pb.HelloReply{Message: "pong authenticated"}, nil
 }
 
+type greeterServer struct {
+	pb.UnimplementedGreeterServer
+}
+
+func (greeterServer) SayHello(ctx context.Context, request *pb.HelloRequest) (*pb.HelloReply, error) {
+	return SayHelloAuthenticated(ctx, request)
+}
+
 func TestSimpleAuth(t *testing.T) {
 	cases := []struct {
 		name       string
@@ -66,7 +74,7 @@ func TestSimpleAuth(t *testing.T) {
 				),
 			)
 
-			pb.RegisterGreeterService(grpcServer, &pb.GreeterService{SayHello: SayHelloAuthenticated})
+			pb.RegisterGreeterServer(grpcServer, greeterServer{})
 
 			l, err := net.Listen("tcp", "127.0.0.1:0")
 			require.NoError(t, err)

@@ -7,19 +7,19 @@ import (
 	"os"
 	"testing"
 
+	orbitdb "berty.tech/go-orbit-db"
+	"berty.tech/go-orbit-db/pubsub/pubsubraw"
 	"github.com/ipfs/go-cid"
 	ds "github.com/ipfs/go-datastore"
 	dsync "github.com/ipfs/go-datastore/sync"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
 	"github.com/stretchr/testify/require"
 
-	orbitdb "berty.tech/go-orbit-db"
-	"berty.tech/go-orbit-db/pubsub/pubsubraw"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	"berty.tech/weshnet/v2/pkg/testutil"
-	"berty.tech/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
 )
 
 func Test_service_exportAccountKeys(t *testing.T) {

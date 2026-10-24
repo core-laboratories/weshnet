@@ -3,14 +3,14 @@ package weshnet
 import (
 	"fmt"
 
+	ipfslog "berty.tech/go-ipfs-log"
 	cid "github.com/ipfs/go-cid"
 	"golang.org/x/crypto/nacl/secretbox"
 	"google.golang.org/protobuf/proto"
 
-	ipfslog "berty.tech/go-ipfs-log"
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 var eventTypesMapper = map[protocoltypes.EventType]struct {

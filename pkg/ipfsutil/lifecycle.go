@@ -14,9 +14,9 @@ import (
 	"github.com/libp2p/go-libp2p/p2p/protocol/ping"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/lifecycle"
-	"berty.tech/weshnet/v2/pkg/logutil"
-	"berty.tech/weshnet/v2/pkg/netmanager"
+	"github.com/core-laboratories/weshnet/v2/pkg/lifecycle"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/netmanager"
 )
 
 var (

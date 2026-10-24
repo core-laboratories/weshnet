@@ -1,4 +1,11 @@
 name: Release
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 on:
   push:
     branches:
@@ -19,35 +26,22 @@ jobs:
     name: Semantic release
     runs-on: ubuntu-latest
     outputs:
-      new-release-published: ${{ steps.semantic-echo.outputs.new-release-published }}
-      release-version: ${{ steps.semantic-echo.outputs.release-version }}
+      new-release-published: ${{ steps.semantic.outputs.new_release_published }}
+      release-version: ${{ steps.semantic.outputs.new_release_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Unshallow
-        run: git fetch --prune --unshallow
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Run Semantic Release
         id: semantic
-        uses: docker://ghcr.io/codfish/semantic-release-action:v1
+        uses: cycjimmy/semantic-release-action@d9bf53a078bd2f86aaffaec796dbb3d28f1b6f34 # v8.1.3
         with:
           branches: |
             ['main']
-          plugins: |
-            [
-              '@semantic-release/commit-analyzer',
-              '@semantic-release/release-notes-generator',
-              '@semantic-release/github'
-            ]
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Export Semantic Release
-        id: semantic-echo
-        run: |
-          echo "::set-output name=new-release-published::${{steps.semantic.outputs.new-release-published}}"
-          echo "::set-output name=release-version::${{steps.semantic.outputs.release-version}}"
 
   post-semantic-release:
     needs: semantic-release
@@ -55,20 +49,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Unshallow
-        run: git fetch --prune --unshallow
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          asdf_version: 0.16.7
+          fetch-depth: 0
 
-      - name: Setup go
-        run: |
-          asdf plugin add golang
-          asdf install golang
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
 
       - name: Register version on pkg.go.dev
         if: needs.semantic-release.outputs.new-release-published == 'true'

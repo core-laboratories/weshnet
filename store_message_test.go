@@ -7,13 +7,13 @@ import (
 	"testing"
 	"time"
 
+	ipfslog "berty.tech/go-ipfs-log"
 	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ipfslog "berty.tech/go-ipfs-log"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
 
 func countEntries(out <-chan *protocoltypes.GroupMessageEvent) int {

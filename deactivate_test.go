@@ -10,10 +10,10 @@ import (
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
 	"github.com/stretchr/testify/require"
 
-	"berty.tech/weshnet/v2"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/testutil"
-	"berty.tech/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
 )
 
 func TestReactivateAccountGroup(t *testing.T) {

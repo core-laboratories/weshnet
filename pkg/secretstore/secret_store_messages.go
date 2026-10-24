@@ -15,10 +15,10 @@ import (
 	"golang.org/x/crypto/nacl/secretbox"
 	"google.golang.org/protobuf/proto"
 
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/logutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 // decryptionContext contains context about a decrypted message, its CID, the

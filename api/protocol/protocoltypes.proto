@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package weshnet.protocol.v1;
 
-option go_package = "berty.tech/weshnet/v2/pkg/protocoltypes";
+option go_package = "github.com/core-laboratories/weshnet/v2/pkg/protocoltypes";
 
 // ProtocolService is the top-level API to manage the Wesh protocol service.
 // Each active Wesh protocol service is considered as a Wesh device and is associated with a Wesh user.
@@ -69,6 +69,12 @@ service ProtocolService {
   // MultiMemberGroupInvitationCreate creates an invitation to a multi-member group
   rpc MultiMemberGroupInvitationCreate (MultiMemberGroupInvitationCreate.Request) returns (MultiMemberGroupInvitationCreate.Reply);
 
+  // GroupRendezvousSeedAdd activates an additional local discovery seed for a group.
+  rpc GroupRendezvousSeedAdd (GroupRendezvousSeedAdd.Request) returns (GroupRendezvousSeedAdd.Reply);
+
+  // GroupRendezvousSeedRemove retires an additional local discovery seed from a group.
+  rpc GroupRendezvousSeedRemove (GroupRendezvousSeedRemove.Request) returns (GroupRendezvousSeedRemove.Reply);
+
   // AppMetadataSend adds an app event to the metadata store, the message is encrypted using a symmetric key and readable by future group members
   rpc AppMetadataSend (AppMetadataSend.Request) returns (AppMetadataSend.Reply);
 
@@ -115,6 +121,12 @@ service ProtocolService {
 
   // PeerList returns a list of P2P peers
   rpc PeerList(PeerList.Request) returns (PeerList.Reply);
+
+  // GetNetworkStatus returns a read-only snapshot of active libp2p connections.
+  rpc GetNetworkStatus(GetNetworkStatus.Request) returns (GetNetworkStatus.Reply);
+
+  // WatchNetworkStatus returns an initial snapshot and subsequent connection changes.
+  rpc WatchNetworkStatus(WatchNetworkStatus.Request) returns (stream WatchNetworkStatus.Reply);
 
   // OutOfStoreReceive parses a payload received outside a synchronized store
   rpc OutOfStoreReceive(OutOfStoreReceive.Request) returns (OutOfStoreReceive.Reply);
@@ -809,6 +821,24 @@ message MultiMemberGroupInvitationCreate {
   }
 }
 
+message GroupRendezvousSeedAdd {
+  message Request {
+    bytes group_pk = 1;
+    bytes seed = 2;
+  }
+
+  message Reply {}
+}
+
+message GroupRendezvousSeedRemove {
+  message Request {
+    bytes group_pk = 1;
+    bytes seed = 2;
+  }
+
+  message Reply {}
+}
+
 message AppMetadataSend {
   message Request {
     // group_pk is the identifier of the group
@@ -1259,6 +1289,63 @@ message PeerList {
     TorFeature = 4;
     QuicFeature = 5;
 
+  }
+}
+
+// NetworkStatusClassification describes what the observed path proves. It does
+// not describe recipient presence, reachability, or message delivery.
+enum NetworkStatusClassification {
+  NetworkStatusClassificationUnknown = 0;
+  NetworkStatusClassificationInternet = 1;
+  NetworkStatusClassificationOffline = 2;
+}
+
+enum NetworkConnectionState {
+  NetworkConnectionStateUnknown = 0;
+  NetworkConnectionStateConnected = 1;
+  NetworkConnectionStateDisconnected = 2;
+}
+
+message NetworkStatus {
+  message Connection {
+    string peer_id = 1;
+    string connection_id = 2;
+    NetworkConnectionState state = 3;
+    string local_multiaddr = 4;
+    string remote_multiaddr = 5;
+    string transport = 6;
+    bool direct = 7;
+    bool relayed = 8;
+    NetworkStatusClassification classification = 9;
+    repeated string evidence = 10;
+    int64 observed_at_unix_ms = 11;
+  }
+
+  message Peer {
+    string peer_id = 1;
+    NetworkStatusClassification classification = 2;
+    repeated string connection_ids = 3;
+    bool mixed = 4;
+    repeated string evidence = 5;
+  }
+
+  repeated Connection connections = 1;
+  repeated Peer peers = 2;
+  int64 observed_at_unix_ms = 3;
+}
+
+message GetNetworkStatus {
+  message Request {}
+  message Reply {
+    NetworkStatus status = 1;
+  }
+}
+
+message WatchNetworkStatus {
+  message Request {}
+  message Reply {
+    NetworkStatus status = 1;
+    NetworkStatus.Connection change = 2;
   }
 }
 

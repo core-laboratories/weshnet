@@ -15,14 +15,14 @@ import (
 	"github.com/multiformats/go-multiaddr"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 // Seed the random number generator.
 //
 // We don't need good randomness, but we do need randomness.
 const (
-	connmgrTag = "berty-peering"
+	connmgrTag = "wesh-peering"
 
 	// MaximumReconnectingDelay define the maximum time a peer is able to
 	// reconnect, if reached peer will be remove from the store

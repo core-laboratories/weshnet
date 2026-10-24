@@ -1,84 +1,100 @@
-# yamllint disable-line rule:document-start
-name: "Bug report"
-description: Report a bug found while using weshnet.
-labels: ["bug"]
+name: Bug report
+description: Report reproducible incorrect behavior in Weshnet
+title: "bug: "
+labels:
+  - bug
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Weshnet. Do not report security
+        vulnerabilities here; use the process in SECURITY.md instead.
+
   - type: checkboxes
+    id: checks
     attributes:
-      label: Is there an existing issue for this?
-      description: >-
-        Please search to see if an issue already exists for the bug you
-        encountered.
+      label: Preflight checks
       options:
-        - label: I have searched the existing issues
+        - label: I searched existing issues for this problem.
           required: true
+        - label: This report does not contain secrets, private keys, recovery material, or private message content.
+          required: true
+
   - type: input
-    id: package-version
+    id: version
     attributes:
-      label: Package version
-      description: What version of weshnet are you using?
-      placeholder: v1.0.3
+      label: Weshnet version
+      description: Provide a release tag or commit SHA.
+      placeholder: v2.x.x or 0123456789abcdef
     validations:
       required: true
+
   - type: dropdown
-    id: os
+    id: platform
     attributes:
-      label: OS
-      description: What OS are you seeing the problem on?
+      label: Platform
       options:
-        - iOS
         - Android
+        - iOS
         - Linux
         - macOS
         - Windows
         - Other
-  - type: input
-    id: language-version
-    attributes:
-      label: Language version and compiler version
-      description: What programming language version and compiler are you using?
-      placeholder: >-
-        go1.18.4, javac 11.0.12
     validations:
       required: true
-  - type: textarea
-    id: bug-description
-    attributes:
-      label: Bug description
-      description: Provide a bug description and a code snippet if applicable.
-      placeholder: |
-        1. Set up this environment ...
-        2. Add this code ...
-        3. Call this function ...
-    validations:
-      required: true
-  - type: textarea
-    id: current-behavior
-    attributes:
-      label: Current behavior
-      description: >-
-        Output after code execution including stack traces, debug logs, etc.
-      placeholder: Currently ...
-    validations:
-      required: true
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: Expected behavior
-      description: Please provide what would be your expectation to happen.
-      placeholder: In this situation, weshnet should ...
-    validations:
-      required: true
+
   - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: What is your development environment?
-      placeholder: macOS 13.1
+      description: Include OS version, architecture, Go version, integration type, and relevant transport configuration.
+      placeholder: |
+        OS: macOS 15
+        Architecture: arm64
+        Go: go1.x
+        Integration: Go service / mobile binding / gRPC client
+        Transports: TCP, QUIC, BLE, Nearby, ...
     validations:
       required: true
+
   - type: textarea
-    id: other
+    id: problem
     attributes:
-      label: Other
-      placeholder: Any other details?
+      label: Problem
+      description: Clearly describe the incorrect behavior and its impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest deterministic sequence that reproduces the problem.
+      placeholder: |
+        1. Create a service with ...
+        2. Connect peers using ...
+        3. Call ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include sanitized logs, errors, stack traces, or a minimal code sample when useful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any relevant timing, network topology, regression range, or workaround.

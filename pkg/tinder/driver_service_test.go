@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
 
 type testMakeDriver = func(t *testing.T, logger *zap.Logger, p host.Host) IDriver
@@ -161,10 +161,7 @@ func testMakeMockedDriverFactory(srv *MockDriverServer) testMakeDriver {
 func testMakeDHTDriver(t *testing.T, logger *zap.Logger, p host.Host) IDriver {
 	t.Helper()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	t.Cleanup(cancel)
-
-	d, err := dht.New(ctx, p)
+	d, err := dht.New(p)
 	require.NoError(t, err)
 	t.Cleanup(func() { d.Close() })
 

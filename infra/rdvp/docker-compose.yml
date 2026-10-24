@@ -1,21 +1,17 @@
-version: "3.7"
-
 services:
   rdvp:
-    image: bertytech/berty:kubo-v0.29.0
-    restart: on-failure
+    image: ${RDVP_IMAGE:-weshnet-rdvp-not-configured}
+    restart: unless-stopped
     environment:
-      - RDVP_PK
-      - EMITTER_SECRET_KEY
-    network_mode: bridge
+      RDVP_PK: ${RDVP_PK:-}
+      EMITTER_SECRET_KEY: ${EMITTER_SECRET_KEY:-}
     entrypoint: rdvp
-    links:
-      - emitter
-    expose:
-      - 8888
+    depends_on:
+      emitter:
+        condition: service_started
     ports:
-      - 4040:4040
-      - 4040:4040/udp
+      - "4040:4040/tcp"
+      - "4040:4040/udp"
     command:
       - serve
       - "-log.format=json"
@@ -31,14 +27,9 @@ services:
 
   emitter:
     image: emitter/server:v3.1
-    container_name: emitter
     restart: unless-stopped
-    network_mode: bridge
     ports:
-      - 9494:9494
-    expose:
-      - 9494
-      # - 4000 # for cluster usage
+      - "9494:9494/tcp"
     environment:
-      - EMITTER_LICENSE
-      - EMITTER_LISTEN=:9494
+      EMITTER_LICENSE: ${EMITTER_LICENSE:-}
+      EMITTER_LISTEN: ":9494"

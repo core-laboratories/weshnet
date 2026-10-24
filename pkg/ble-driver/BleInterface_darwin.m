@@ -74,7 +74,7 @@ int BLESendToPeer(char *remotePID, void *payload, int length) {
     NSString *cPID = [[NSString alloc] initWithUTF8String:remotePID];
     NSData *cPayload = [[NSData alloc] initWithBytes:payload length:length];
 
-    BertyDevice *bDevice = [getManager() findPeripheralFromPID:cPID];
+    WeshDevice *bDevice = [getManager() findPeripheralFromPID:cPID];
     if (bDevice == nil) {
         [getManager().logger e:@"BLESendToPeer error: no device found"];
         return 0;
@@ -103,7 +103,7 @@ int BLESendToPeer(char *remotePID, void *payload, int length) {
 }
 
 int BLEDialPeer(char *remotePID) {
-    BertyDevice *bDevice = [getManager() findPeripheralFromPID:[NSString stringWithUTF8String:remotePID]];
+    WeshDevice *bDevice = [getManager() findPeripheralFromPID:[NSString stringWithUTF8String:remotePID]];
     if (bDevice != nil) {
         return 1;
     }
@@ -113,7 +113,7 @@ int BLEDialPeer(char *remotePID) {
 // TODO: Implement this
 void BLECloseConnWithPeer(char *remotePID) {
     [getManager().logger i:@"BLECloseConnWithPeer called: remotePID=%@", [getManager().logger SensitiveString:remotePID]];
-    BertyDevice *bDevice = [getManager() findPeripheralFromPID:[NSString stringWithUTF8String:remotePID]];
+    WeshDevice *bDevice = [getManager() findPeripheralFromPID:[NSString stringWithUTF8String:remotePID]];
     if (bDevice != nil) {
         [getManager() disconnect:bDevice];
     }

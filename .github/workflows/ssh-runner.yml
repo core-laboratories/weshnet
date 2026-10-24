@@ -1,4 +1,7 @@
 name: SSH on runner
+
+permissions:
+  contents: read
 on:
   workflow_dispatch:
     inputs:
@@ -23,35 +26,16 @@ jobs:
     runs-on: ${{ github.event.inputs.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Load variables from file
-        uses: antifree/json-to-variables@v1.0.1
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          filename: .github/workflows/utils/variables.json
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
-        with:
-          asdf_version: 0.16.7
-
-      - name: Setup go
-        if: runner.os != 'Windows'
-        run: |
-          asdf plugin add golang
-          asdf install golang
-          echo "go_version=$(asdf current golang | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
-
-      - name: Cache go modules
-        if: github.event.inputs.mod == 'true' && runner.os != 'Windows'
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
 
       - name: Fetch go modules
         if: github.event.inputs.mod == 'true' && runner.os != 'Windows'
@@ -70,6 +54,6 @@ jobs:
           fi
 
       - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+        uses: mxschmitt/action-tmate@35b54afac29c97fb54faba5b513f8fbd1882f113 # v3.24
         with:
           limit-access-to-actor: true

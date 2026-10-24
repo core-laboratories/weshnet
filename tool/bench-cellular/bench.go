@@ -12,8 +12,8 @@ import (
 
 	golog "github.com/ipfs/go-log"
 	"github.com/libp2p/go-libp2p"
-	quict "github.com/libp2p/go-libp2p-quic-transport"
 	"github.com/libp2p/go-libp2p/core/crypto"
+	quict "github.com/libp2p/go-libp2p/p2p/transport/quic"
 	tcpt "github.com/libp2p/go-libp2p/p2p/transport/tcp"
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/peterbourgon/ff/v3/ffcli"
@@ -76,7 +76,7 @@ func main() {
 		serverFs := flag.NewFlagSet("server", flag.ExitOnError)
 		serverFs.IntVar(&sOpts.port, "port", 0, "port to listen on (default: random)")
 		serverFs.BoolVar(&sOpts.ip6, "ip6", false, "use ipv6 instead of ipv4")
-		serverFs.StringVar(&sOpts.relay, "relay", staticBertyRelayMode, fmt.Sprintf("set relay mode, possible values: '%s', '%s', '%s' or '%s'", staticBertyRelayMode, staticIPFSRelayMode, discoveryRelayMode, disabledRelayMode))
+		serverFs.StringVar(&sOpts.relay, "relay", staticToneRelayMode, fmt.Sprintf("set relay mode, possible values: '%s', '%s', '%s' or '%s'", staticToneRelayMode, staticIPFSRelayMode, discoveryRelayMode, disabledRelayMode))
 
 		serverCommand = &ffcli.Command{
 			Name:       "server",
@@ -87,7 +87,7 @@ func main() {
 				if len(args) > 0 {
 					return flag.ErrHelp
 				}
-				if sOpts.relay != staticBertyRelayMode && sOpts.relay != staticIPFSRelayMode && sOpts.relay != discoveryRelayMode && sOpts.relay != disabledRelayMode {
+				if sOpts.relay != staticToneRelayMode && sOpts.relay != staticIPFSRelayMode && sOpts.relay != discoveryRelayMode && sOpts.relay != disabledRelayMode {
 					fmt.Fprintf(os.Stderr, "error: invalid value for -relay flag: %s\n\n", sOpts.relay)
 					return flag.ErrHelp
 				}

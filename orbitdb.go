@@ -7,6 +7,16 @@ import (
 	"sync"
 	"time"
 
+	ipfslog "berty.tech/go-ipfs-log"
+	"berty.tech/go-ipfs-log/enc"
+	"berty.tech/go-ipfs-log/entry"
+	"berty.tech/go-ipfs-log/identityprovider"
+	"berty.tech/go-ipfs-log/io"
+	orbitdb "berty.tech/go-orbit-db"
+	"berty.tech/go-orbit-db/baseorbitdb"
+	"berty.tech/go-orbit-db/iface"
+	"berty.tech/go-orbit-db/pubsub/pubsubcoreapi"
+	"berty.tech/go-orbit-db/stores"
 	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-datastore"
 	ds_sync "github.com/ipfs/go-datastore/sync"
@@ -18,22 +28,12 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 
-	ipfslog "berty.tech/go-ipfs-log"
-	"berty.tech/go-ipfs-log/enc"
-	"berty.tech/go-ipfs-log/entry"
-	"berty.tech/go-ipfs-log/identityprovider"
-	"berty.tech/go-ipfs-log/io"
-	orbitdb "berty.tech/go-orbit-db"
-	"berty.tech/go-orbit-db/baseorbitdb"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/go-orbit-db/pubsub/pubsubcoreapi"
-	"berty.tech/go-orbit-db/stores"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/rendezvous"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	"berty.tech/weshnet/v2/pkg/tyber"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
 )
 
 type GroupOpenMode uint64
@@ -105,7 +105,7 @@ type (
 
 type WeshOrbitDB struct {
 	baseorbitdb.BaseOrbitDB
-	keyStore           *BertySignedKeyStore
+	keyStore           *WeshSignedKeyStore
 	secretStore        secretstore.SecretStore
 	pubSub             iface.PubSubInterface
 	rotationInterval   *rendezvous.RotationInterval
@@ -173,7 +173,7 @@ func NewWeshOrbitDB(ctx context.Context, ipfs coreiface.CoreAPI, options *NewOrb
 
 	options.applyDefaults()
 
-	ks := &BertySignedKeyStore{}
+	ks := &WeshSignedKeyStore{}
 	options.Keystore = ks
 	options.Identity = &identityprovider.Identity{}
 
@@ -194,7 +194,7 @@ func NewWeshOrbitDB(ctx context.Context, ipfs coreiface.CoreAPI, options *NewOrb
 		return nil, errcode.ErrCode_TODO.Wrap(err)
 	}
 
-	bertyDB := &WeshOrbitDB{
+	weshDB := &WeshOrbitDB{
 		ctx:                    ctx,
 		messageMarshaler:       mm,
 		BaseOrbitDB:            orbitDB,
@@ -211,13 +211,13 @@ func NewWeshOrbitDB(ctx context.Context, ipfs coreiface.CoreAPI, options *NewOrb
 		prometheusRegister:     options.PrometheusRegister,
 	}
 
-	if err := bertyDB.RegisterAccessControllerType(NewSimpleAccessController); err != nil {
+	if err := weshDB.RegisterAccessControllerType(NewSimpleAccessController); err != nil {
 		return nil, errcode.ErrCode_TODO.Wrap(err)
 	}
-	bertyDB.RegisterStoreType(bertyDB.groupMetadataStoreType, constructorFactoryGroupMetadata(bertyDB, options.Logger))
-	bertyDB.RegisterStoreType(bertyDB.groupMessageStoreType, constructorFactoryGroupMessage(bertyDB, options.Logger))
+	weshDB.RegisterStoreType(weshDB.groupMetadataStoreType, constructorFactoryGroupMetadata(weshDB, options.Logger))
+	weshDB.RegisterStoreType(weshDB.groupMessageStoreType, constructorFactoryGroupMessage(weshDB, options.Logger))
 
-	return bertyDB, nil
+	return weshDB, nil
 }
 
 func (s *WeshOrbitDB) openAccountGroup(ctx context.Context, options *orbitdb.CreateDBOptions, ipfsCoreAPI ipfsutil.ExtendedCoreAPI) (*GroupContext, error) {

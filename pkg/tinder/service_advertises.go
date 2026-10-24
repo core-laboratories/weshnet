@@ -7,7 +7,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 const defaultTTL = time.Hour

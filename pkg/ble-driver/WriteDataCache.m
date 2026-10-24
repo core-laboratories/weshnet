@@ -1,17 +1,17 @@
 // +build darwin,!noproximitytransport
 //
 //  WriteDataCache.m
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 03/08/2021.
 //
 
 #import "WriteDataCache.h"
-#import "BertyDevice_darwin.h"
+#import "WeshDevice_darwin.h"
 
 @implementation WriteDataCache
 
-- (instancetype __nonnull) initWithDevice:(BertyDevice *__nonnull)device withData:(NSData *__nonnull)data {
+- (instancetype __nonnull) initWithDevice:(WeshDevice *__nonnull)device withData:(NSData *__nonnull)data {
     self = [super init];
 
     if (self) {

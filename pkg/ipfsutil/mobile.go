@@ -17,7 +17,7 @@ import (
 	tcpt "github.com/libp2p/go-libp2p/p2p/transport/tcp"
 	"go.uber.org/zap"
 
-	ipfs_mobile "berty.tech/weshnet/v2/pkg/ipfsutil/mobile"
+	ipfs_mobile "github.com/core-laboratories/weshnet/v2/pkg/ipfsutil/mobile"
 )
 
 type DHTNetworkMode int
@@ -141,13 +141,12 @@ func CustomRoutingOption(mode dht.ModeOpt, net DHTNetworkMode, opts ...dht.Optio
 			dht.BootstrapPeers(args.BootstrapPeers...),
 		)
 
-		return newDualDHT(args.Ctx, args.Host, net, opts...)
+		return newDualDHT(args.Host, net, opts...)
 	}
 }
 
 func (o *MobileOptions) defaultIpfsConfigPatch(cfg *ipfs_config.Config) ([]p2p.Option, error) {
-	// Imitate berty setupIPFSConfig
-	// https://github.com/berty/berty/blob/5a8b9cb8524c1287ab2533a9e186ac8bde7f2b57/go/internal/initutil/ipfs.go#L474C19-L474C34
+	// Keep the mobile IPFS configuration explicit and deterministic.
 	p2popts := []p2p.Option{}
 
 	// make sure relay is enabled
@@ -198,7 +197,7 @@ const (
 	maxPrefixCount       = 3
 )
 
-func newDualDHT(ctx context.Context, h host.Host, net DHTNetworkMode, options ...dht.Option) (p2p_routing.Routing, error) {
+func newDualDHT(h host.Host, net DHTNetworkMode, options ...dht.Option) (p2p_routing.Routing, error) {
 	switch net {
 	case DHTNetworkWan:
 		options = append(options,
@@ -207,7 +206,7 @@ func newDualDHT(ctx context.Context, h host.Host, net DHTNetworkMode, options ..
 			dht.RoutingTablePeerDiversityFilter(dht.NewRTPeerDiversityFilter(h, maxPrefixCountPerCpl, maxPrefixCount)),
 		)
 
-		return dht.New(ctx, h, options...)
+		return dht.New(h, options...)
 	case DHTNetworkLan:
 		options = append(options,
 			dht.ProtocolExtension(dual.LanExtension),
@@ -215,8 +214,8 @@ func newDualDHT(ctx context.Context, h host.Host, net DHTNetworkMode, options ..
 			dht.RoutingTableFilter(dht.PrivateRoutingTableFilter),
 		)
 
-		return dht.New(ctx, h, options...)
+		return dht.New(h, options...)
 	default: // dual
-		return dual.New(ctx, h, dual.DHTOption(options...))
+		return dual.New(h, dual.DHTOption(options...))
 	}
 }

@@ -1,11 +1,11 @@
 package weshnet
 
 import (
+	"berty.tech/go-orbit-db/stores/operation"
 	"github.com/ipfs/go-cid"
 
-	"berty.tech/go-orbit-db/stores/operation"
-	"berty.tech/weshnet/v2/internal/queue"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/internal/queue"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 // An Item is something we manage in a priority queue.

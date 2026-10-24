@@ -27,10 +27,10 @@ type EvtPeerTag struct {
 	Total int
 }
 
-var _ connmgr.ConnManager = (*BertyConnManager)(nil)
+var _ connmgr.ConnManager = (*WeshConnManager)(nil)
 
 // keep track of peer of interest
-type BertyConnManager struct {
+type WeshConnManager struct {
 	connmgr.ConnManager
 
 	logger     *zap.Logger
@@ -39,15 +39,15 @@ type BertyConnManager struct {
 	marked     map[peer.ID]int
 }
 
-func NewBertyConnManager(logger *zap.Logger, cm connmgr.ConnManager) *BertyConnManager {
-	return &BertyConnManager{
+func NewWeshConnManager(logger *zap.Logger, cm connmgr.ConnManager) *WeshConnManager {
+	return &WeshConnManager{
 		ConnManager: cm,
 		logger:      logger,
 		marked:      make(map[peer.ID]int),
 	}
 }
 
-func (c *BertyConnManager) RegisterEventBus(bus event.Bus) (err error) {
+func (c *WeshConnManager) RegisterEventBus(bus event.Bus) (err error) {
 	if c.tagEmitter == nil {
 		c.tagEmitter, err = bus.Emitter(new(EvtPeerTag))
 	} else {
@@ -56,7 +56,7 @@ func (c *BertyConnManager) RegisterEventBus(bus event.Bus) (err error) {
 	return err
 }
 
-func (c *BertyConnManager) GetPeerScore(p peer.ID) (score int, exist bool) {
+func (c *WeshConnManager) GetPeerScore(p peer.ID) (score int, exist bool) {
 	c.muMarked.RLock()
 	score, exist = c.marked[p]
 	c.muMarked.RUnlock()
@@ -64,7 +64,7 @@ func (c *BertyConnManager) GetPeerScore(p peer.ID) (score int, exist bool) {
 }
 
 // TagPeer tags a peer with a string, associating a weight with the tag.
-func (c *BertyConnManager) TagPeer(p peer.ID, tag string, score int) {
+func (c *WeshConnManager) TagPeer(p peer.ID, tag string, score int) {
 	c.ConnManager.TagPeer(p, tag, score)
 
 	old, total := c.computePeerScore(p)
@@ -85,7 +85,7 @@ func (c *BertyConnManager) TagPeer(p peer.ID, tag string, score int) {
 }
 
 // Untag removes the tagged value from the peer.
-func (c *BertyConnManager) UntagPeer(p peer.ID, tag string) {
+func (c *WeshConnManager) UntagPeer(p peer.ID, tag string) {
 	c.ConnManager.UntagPeer(p, tag)
 
 	old, total := c.computePeerScore(p)
@@ -110,7 +110,7 @@ func (c *BertyConnManager) UntagPeer(p peer.ID, tag string) {
 // The connection manager calls the upsert function supplying the current
 // value of the tag (or zero if inexistent). The return value is used as
 // the new value of the tag.
-func (c *BertyConnManager) UpsertTag(p peer.ID, tag string, upsert func(int) int) {
+func (c *WeshConnManager) UpsertTag(p peer.ID, tag string, upsert func(int) int) {
 	c.ConnManager.UpsertTag(p, tag, upsert)
 
 	old, total := c.computePeerScore(p)
@@ -130,7 +130,7 @@ func (c *BertyConnManager) UpsertTag(p peer.ID, tag string, upsert func(int) int
 	}
 }
 
-func (c *BertyConnManager) computePeerScore(p peer.ID) (old, newScore int) {
+func (c *WeshConnManager) computePeerScore(p peer.ID) (old, newScore int) {
 	c.muMarked.Lock()
 
 	old = c.marked[p]

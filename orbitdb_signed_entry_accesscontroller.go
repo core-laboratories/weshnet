@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"sync"
 
+	logac "berty.tech/go-ipfs-log/accesscontroller"
+	"berty.tech/go-ipfs-log/identityprovider"
+	"berty.tech/go-orbit-db/accesscontroller"
+	"berty.tech/go-orbit-db/iface"
 	cid "github.com/ipfs/go-cid"
 	mh "github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	logac "berty.tech/go-ipfs-log/accesscontroller"
-	"berty.tech/go-ipfs-log/identityprovider"
-	"berty.tech/go-orbit-db/accesscontroller"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
 type simpleAccessController struct {
@@ -85,7 +85,7 @@ func (o *simpleAccessController) Close() error {
 }
 
 func (o *simpleAccessController) Type() string {
-	return "bertysimple"
+	return "weshsimple"
 }
 
 func (o *simpleAccessController) GetAuthorizedByRole(role string) ([]string, error) {

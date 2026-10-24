@@ -1,0 +1,34 @@
+ADR: Legacy gRPC bridge
+=======================
+
+Status: Historical design record
+
+Context
+-------
+
+The original mobile integration needed to carry unary and streaming gRPC calls
+between JavaScript, native Android or iOS code, and Go. The platform bridge
+could only invoke native methods with serialized payloads.
+
+Decision
+--------
+
+Use a bridge service that creates logical clients and streams, then exchanges
+serialized request and response frames through a native transport. The bridge
+owns stream creation, send, receive, and close operations while the regular
+protocol services remain behind a Go gRPC client connection.
+
+Consequences
+------------
+
+* Applications can use the same protocol API from Go and mobile bindings.
+* Native transports need explicit framing and lifecycle management.
+* Streaming calls require additional bookkeeping and cancellation handling.
+* Errors must cross the bridge without losing their protocol error codes.
+
+Current relevance
+-----------------
+
+This document preserves the rationale for the legacy bridge. New integrations
+should inspect the current generated bindings and gRPC service definitions
+before adopting this design.

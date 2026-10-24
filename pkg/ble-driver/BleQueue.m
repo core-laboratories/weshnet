@@ -1,7 +1,7 @@
 // +build darwin,!noproximitytransport
 //
 //  BleQueue.m
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 03/05/2021.
 //

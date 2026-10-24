@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 func inviteAllPeersToGroup(ctx context.Context, t *testing.T, peers []*mockedPeer, groupSK crypto.PrivKey) {
@@ -68,7 +68,7 @@ func inviteAllPeersToGroup(ctx context.Context, t *testing.T, peers []*mockedPee
 	}
 }
 
-func waitForBertyEventType(ctx context.Context, t *testing.T, ms *MetadataStore, eventType protocoltypes.EventType, eventCount int, done chan struct{}) {
+func waitForWeshEventType(ctx context.Context, t *testing.T, ms *MetadataStore, eventType protocoltypes.EventType, eventCount int, done chan struct{}) {
 	t.Helper()
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -77,7 +77,11 @@ func waitForBertyEventType(ctx context.Context, t *testing.T, ms *MetadataStore,
 	handledEvents := map[string]struct{}{}
 
 	sub, err := ms.EventBus().Subscribe(new(*protocoltypes.GroupMetadataEvent))
-	require.NoError(t, err)
+	if err != nil {
+		t.Errorf("subscribe to metadata events: %v", err)
+		done <- struct{}{}
+		return
+	}
 	defer sub.Close()
 
 	for {
@@ -105,7 +109,9 @@ func waitForBertyEventType(ctx context.Context, t *testing.T, ms *MetadataStore,
 
 			e := &protocoltypes.GroupDeviceChainKeyAdded{}
 			if err := proto.Unmarshal(evt.Event, e); err != nil {
-				t.Fatalf(" err: %+v\n", err.Error())
+				t.Errorf("unmarshal metadata event: %v", err)
+				done <- struct{}{}
+				return
 			}
 
 			// fmt.Println(string(e.DevicePK), string(e.DestMemberPK))

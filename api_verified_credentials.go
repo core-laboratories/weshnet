@@ -7,15 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"berty.tech/weshnet/v2/pkg/bertyvcissuer"
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/vcissuer"
 )
 
 func (s *service) CredentialVerificationServiceInitFlow(ctx context.Context, request *protocoltypes.CredentialVerificationServiceInitFlow_Request) (*protocoltypes.CredentialVerificationServiceInitFlow_Reply, error) {
 	s.lock.Lock()
-	s.vcClient = bertyvcissuer.NewClient(request.ServiceUrl)
+	s.vcClient = vcissuer.NewClient(request.ServiceUrl)
 	client := s.vcClient
 	s.lock.Unlock()
 

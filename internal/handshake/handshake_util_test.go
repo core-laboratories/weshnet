@@ -13,12 +13,12 @@ import (
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
 	"github.com/stretchr/testify/require"
 
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protoio"
-	"berty.tech/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
+	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
 )
 
-const testProtocolID = "/berty/handshake_test/1.0.0"
+const testProtocolID = "/wesh/handshake_test/1.0.0"
 
 type mockedPeer struct {
 	accountID p2pcrypto.PrivKey
