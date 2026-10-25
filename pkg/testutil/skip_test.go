@@ -3,7 +3,7 @@ package testutil_test
 import (
 	"testing"
 
-	"berty.tech/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
 
 func TestFilterRace(t *testing.T) {

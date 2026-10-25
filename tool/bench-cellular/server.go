@@ -11,21 +11,21 @@ import (
 
 	"github.com/libp2p/go-libp2p"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
-	routing "github.com/libp2p/go-libp2p-routing"
 	"github.com/libp2p/go-libp2p/core/event"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/libp2p/go-libp2p/core/routing"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
 )
 
-var tcpBertyRelays = []string{
+var tcpToneRelays = []string{
 	"/ip4/51.159.21.214/tcp/4040/p2p/QmdT7AmhhnbuwvCpa5PH1ySK9HJVB82jr3fo1bxMxBPW6p",
 	"/ip4/51.15.25.224/tcp/4040/p2p/12D3KooWHhDBv6DJJ4XDWjzEXq6sVNEs6VuxsV1WyBBEhPENHzcZ",
 }
 
-var quicBertyRelays = []string{
+var quicToneRelays = []string{
 	"/ip4/51.159.21.214/udp/4040/quic/p2p/QmdT7AmhhnbuwvCpa5PH1ySK9HJVB82jr3fo1bxMxBPW6p",
 	"/ip4/51.15.25.224/udp/4040/quic/p2p/12D3KooWHhDBv6DJJ4XDWjzEXq6sVNEs6VuxsV1WyBBEhPENHzcZ",
 }
@@ -43,10 +43,10 @@ var quicIPFSRelays = []string{
 }
 
 const (
-	staticBertyRelayMode = "static-berty"
-	staticIPFSRelayMode  = "static-ipfs"
-	discoveryRelayMode   = "discovery"
-	disabledRelayMode    = "none"
+	staticToneRelayMode = "static-tone"
+	staticIPFSRelayMode = "static-ipfs"
+	discoveryRelayMode  = "discovery"
+	disabledRelayMode   = "none"
 )
 
 type serverOpts struct {
@@ -89,20 +89,20 @@ func createServerHost(ctx context.Context, gOpts *globalOpts, sOpts *serverOpts)
 		opts = append(
 			opts,
 			libp2p.Routing(func(h host.Host) (routing.PeerRouting, error) {
-				return dht.New(ctx, h, dht.Mode(dht.ModeClient), dht.BootstrapPeers(dht.GetDefaultBootstrapPeerAddrInfos()...))
+				return dht.New(h, dht.Mode(dht.ModeClient), dht.BootstrapPeers(dht.GetDefaultBootstrapPeerAddrInfos()...))
 			}),
 		)
-	} else { // Or setup Berty / IPFS static relays
+	} else { // Or set up Tone / IPFS static relays
 		var (
 			maddrRelays  []string
 			staticRelays []peer.AddrInfo
 		)
 
-		if sOpts.relay == staticBertyRelayMode {
+		if sOpts.relay == staticToneRelayMode {
 			if gOpts.tcp {
-				maddrRelays = tcpBertyRelays
+				maddrRelays = tcpToneRelays
 			} else {
-				maddrRelays = quicBertyRelays
+				maddrRelays = quicToneRelays
 			}
 		} else {
 			if gOpts.tcp {
@@ -128,10 +128,10 @@ func createServerHost(ctx context.Context, gOpts *globalOpts, sOpts *serverOpts)
 			staticRelays = append(staticRelays, *pi)
 		}
 
-		opts = append(opts, libp2p.StaticRelays(staticRelays))
+		opts = append(opts, libp2p.EnableAutoRelayWithStaticRelays(staticRelays))
 	}
 
-	return libp2p.New(ctx, opts...) // Create host
+	return libp2p.New(opts...) // Create host
 }
 
 func printHint(h host.Host, gOpts *globalOpts, sOpts *serverOpts) {

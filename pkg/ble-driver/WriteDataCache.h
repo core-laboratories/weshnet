@@ -1,6 +1,6 @@
 //
 //  WriteDataCache.h
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 03/08/2021.
 //
@@ -9,14 +9,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BertyDevice;
+@class WeshDevice;
 
 @interface WriteDataCache : NSObject
 
-@property (nonatomic, strong, nonnull) BertyDevice *device;
+@property (nonatomic, strong, nonnull) WeshDevice *device;
 @property (nonatomic, strong, nonnull) NSData *data;
 
-- (instancetype __nonnull) initWithDevice:(BertyDevice *__nonnull)device withData:(NSData *__nonnull)data;
+- (instancetype __nonnull) initWithDevice:(WeshDevice *__nonnull)device withData:(NSData *__nonnull)data;
 
 @end
 

@@ -1,5 +1,5 @@
-// Package protocoltypes contains types and helpers for the Berty Protocol.
+// Package protocoltypes contains types and helpers for the Wesh Protocol.
 
 // This package is generated with Protobuf.
-// See https://github.com/berty/berty/tree/master/api for more information.
+// The protocol definitions live in this module's api/protocol directory.
 package protocoltypes

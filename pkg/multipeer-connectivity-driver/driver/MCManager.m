@@ -4,7 +4,7 @@
 #import "MCManager.h"
 #import "mc-driver.h"
 
-NSString *BERTY_DRIVER_MC = @"berty-mc";
+NSString *WESH_DRIVER_MC = @"wesh-mc";
 
 @implementation MCManager
 
@@ -12,8 +12,8 @@ NSString *BERTY_DRIVER_MC = @"berty-mc";
 // the first time it's created.
 // https://developer.apple.com/documentation/multipeerconnectivity/mcpeerid
 - (MCPeerID *)getMCPeerID:(NSString *)appPID {
-    NSString *kAppPID = @"berty-peerID";
-    NSString *kPIDData = @"berty-PIDData";
+    NSString *kAppPID = @"wesh-peerID";
+    NSString *kPIDData = @"wesh-PIDData";
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *oldAppPID = [defaults stringForKey:kAppPID];
@@ -47,7 +47,7 @@ NSString *BERTY_DRIVER_MC = @"berty-mc";
         if (useExternalLogger) {
             _logger = [[Logger alloc] initWithExternalLoggerAndShowSensitiveData:showSensitiveData];
         } else {
-            _logger = [[Logger alloc] initLocalLoggerWithSubSystem:"tech.berty.bty" andCategorie:"MC" showSensitiveData:showSensitiveData];
+            _logger = [[Logger alloc] initLocalLoggerWithSubSystem:"tech.wesh.bty" andCategorie:"MC" showSensitiveData:showSensitiveData];
         }
 
         if (!(self.mSession = [[MCSession alloc] initWithPeer:self.mPeerID securityIdentity:nil encryptionPreference:MCEncryptionRequired])) {
@@ -60,7 +60,7 @@ NSString *BERTY_DRIVER_MC = @"berty-mc";
 }
 
 - (int)startServiceAdvertiser {
-    if (!(self.mServiceAdvertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.mPeerID discoveryInfo:nil serviceType:BERTY_DRIVER_MC])) {
+    if (!(self.mServiceAdvertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.mPeerID discoveryInfo:nil serviceType:WESH_DRIVER_MC])) {
         [self.logger d:@"MCNearbyServiceAdvertiser init failed"];
         return (0);
     }
@@ -70,7 +70,7 @@ NSString *BERTY_DRIVER_MC = @"berty-mc";
 }
 
 - (int)startServiceBrowser {
-    if (!(self.mServiceBrowser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.mPeerID serviceType:BERTY_DRIVER_MC])) {
+    if (!(self.mServiceBrowser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.mPeerID serviceType:WESH_DRIVER_MC])) {
         [self.logger d:@"MCNearbyServiceBrowser init failed"];
         return (0);
     }

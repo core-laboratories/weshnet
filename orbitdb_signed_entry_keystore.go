@@ -5,17 +5,17 @@ import (
 	"encoding/hex"
 	"sync"
 
+	"berty.tech/go-ipfs-log/keystore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 
-	"berty.tech/go-ipfs-log/keystore"
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
-type BertySignedKeyStore struct {
+type WeshSignedKeyStore struct {
 	sync.Map
 }
 
-func (s *BertySignedKeyStore) SetKey(pk crypto.PrivKey) error {
+func (s *WeshSignedKeyStore) SetKey(pk crypto.PrivKey) error {
 	pubKeyBytes, err := pk.GetPublic().Raw()
 	if err != nil {
 		return errcode.ErrCode_TODO.Wrap(err)
@@ -28,17 +28,17 @@ func (s *BertySignedKeyStore) SetKey(pk crypto.PrivKey) error {
 	return nil
 }
 
-func (s *BertySignedKeyStore) HasKey(_ context.Context, id string) (bool, error) {
+func (s *WeshSignedKeyStore) HasKey(_ context.Context, id string) (bool, error) {
 	_, ok := s.Load(id)
 
 	return ok, nil
 }
 
-func (s *BertySignedKeyStore) CreateKey(ctx context.Context, id string) (crypto.PrivKey, error) {
+func (s *WeshSignedKeyStore) CreateKey(ctx context.Context, id string) (crypto.PrivKey, error) {
 	return s.GetKey(ctx, id)
 }
 
-func (s *BertySignedKeyStore) GetKey(_ context.Context, id string) (crypto.PrivKey, error) {
+func (s *WeshSignedKeyStore) GetKey(_ context.Context, id string) (crypto.PrivKey, error) {
 	if privKey, ok := s.Load(id); ok {
 		if pk, ok := privKey.(crypto.PrivKey); ok {
 			return pk, nil
@@ -48,11 +48,11 @@ func (s *BertySignedKeyStore) GetKey(_ context.Context, id string) (crypto.PrivK
 	return nil, errcode.ErrCode_ErrGroupMemberUnknownGroupID
 }
 
-func (s *BertySignedKeyStore) Sign(privKey crypto.PrivKey, bytes []byte) ([]byte, error) {
+func (s *WeshSignedKeyStore) Sign(privKey crypto.PrivKey, bytes []byte) ([]byte, error) {
 	return privKey.Sign(bytes)
 }
 
-func (s *BertySignedKeyStore) Verify(signature []byte, publicKey crypto.PubKey, data []byte) error {
+func (s *WeshSignedKeyStore) Verify(signature []byte, publicKey crypto.PubKey, data []byte) error {
 	ok, err := publicKey.Verify(data, signature)
 	if err != nil {
 		return err
@@ -65,10 +65,10 @@ func (s *BertySignedKeyStore) Verify(signature []byte, publicKey crypto.PubKey, 
 	return nil
 }
 
-func (s *BertySignedKeyStore) getIdentityProvider() *bertySignedIdentityProvider {
-	return &bertySignedIdentityProvider{
+func (s *WeshSignedKeyStore) getIdentityProvider() *weshSignedIdentityProvider {
+	return &weshSignedIdentityProvider{
 		keyStore: s,
 	}
 }
 
-var _ keystore.Interface = (*BertySignedKeyStore)(nil)
+var _ keystore.Interface = (*WeshSignedKeyStore)(nil)

@@ -4,15 +4,15 @@ import (
 	"testing"
 	"time"
 
+	"berty.tech/go-ipfs-log/enc"
+	"berty.tech/go-ipfs-log/entry"
+	"berty.tech/go-orbit-db/iface"
 	mocknet "github.com/libp2p/go-libp2p/p2p/net/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"berty.tech/go-ipfs-log/enc"
-	"berty.tech/go-ipfs-log/entry"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/weshnet/v2/pkg/rendezvous"
-	"berty.tech/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
 )
 
 var (

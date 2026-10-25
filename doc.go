@@ -1,4 +1,4 @@
-// Package weshnet contains code for integrating the Berty protocol in your project.
+// Package weshnet contains code for integrating the Wesh protocol in your project.
 //
-// See https://berty.tech/protocol for more information.
+// Wesh is an application-independent peer-to-peer communication protocol.
 package weshnet

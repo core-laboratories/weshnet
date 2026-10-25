@@ -1,6 +1,6 @@
 //
 //  PeerManager.h
-//  BertyBridgeDemo
+//  WeshBridgeDemo
 //
 //  Created by Rémi BARBERO on 29/04/2021.
 //
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class BertyDevice;
+@class WeshDevice;
 
 @interface PeerManager : NSObject
 
@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype __nonnull)initWithLogger:(Logger *__nonnull)logger;
 - (ConnectedPeer *__nonnull)getPeer:(NSString *__nonnull) peerID;
-- (ConnectedPeer *__nullable)registerDevice:(BertyDevice *__nonnull)device withPeerID:(NSString *__nonnull)peerID isClient:(BOOL)isClient;
-- (void)unregisterDevice:(BertyDevice *)device;
+- (ConnectedPeer *__nullable)registerDevice:(WeshDevice *__nonnull)device withPeerID:(NSString *__nonnull)peerID isClient:(BOOL)isClient;
+- (void)unregisterDevice:(WeshDevice *)device;
 - (void)removePeer:(NSString *__nonnull) peerID;
 - (void)removeAllPeers;
 

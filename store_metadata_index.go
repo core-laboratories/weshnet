@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"sync"
 
+	ipfslog "berty.tech/go-ipfs-log"
+	"berty.tech/go-orbit-db/iface"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
-	ipfslog "berty.tech/go-ipfs-log"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
 )
 
 // FIXME: replace members, devices, sentSecrets, contacts and groups by a circular buffer to avoid an attack by RAM saturation

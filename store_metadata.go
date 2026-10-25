@@ -9,13 +9,6 @@ import (
 	"slices"
 	"strings"
 
-	coreiface "github.com/ipfs/kubo/core/coreiface"
-	"github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/event"
-	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
-	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
-
 	ipfslog "berty.tech/go-ipfs-log"
 	"berty.tech/go-ipfs-log/identityprovider"
 	ipliface "berty.tech/go-ipfs-log/iface"
@@ -24,10 +17,17 @@ import (
 	"berty.tech/go-orbit-db/stores"
 	"berty.tech/go-orbit-db/stores/basestore"
 	"berty.tech/go-orbit-db/stores/operation"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	"berty.tech/weshnet/v2/pkg/tyber"
+	coreiface "github.com/ipfs/kubo/core/coreiface"
+	"github.com/libp2p/go-libp2p/core/crypto"
+	"github.com/libp2p/go-libp2p/core/event"
+	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
+
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
 )
 
 type MetadataStore struct {

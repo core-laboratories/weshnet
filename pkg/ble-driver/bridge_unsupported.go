@@ -5,7 +5,7 @@ package ble
 import (
 	"go.uber.org/zap"
 
-	proximity "berty.tech/weshnet/v2/pkg/proximitytransport"
+	proximity "github.com/core-laboratories/weshnet/v2/pkg/proximitytransport"
 )
 
 const Supported = false

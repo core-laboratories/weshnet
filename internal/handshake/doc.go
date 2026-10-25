@@ -56,5 +56,5 @@
 //     |---------------------------------->|
 //     |                                   |
 //
-// See the documentation at https://berty.tech/protocol for more information.
+// See the repository documentation for more information.
 package handshake

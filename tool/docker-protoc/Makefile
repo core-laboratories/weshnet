@@ -1,4 +1,4 @@
-IMAGE ?=	bertytech/buf
+IMAGE ?=	corelaboratories/weshnet-buf
 VERSION ?=	6
 
 build:

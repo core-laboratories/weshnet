@@ -14,7 +14,7 @@ import (
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/scrypt"
 
-	"berty.tech/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 )
 
 const (

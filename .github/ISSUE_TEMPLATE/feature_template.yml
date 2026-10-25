@@ -1,41 +1,71 @@
-# yamllint disable-line rule:document-start
-name: "Feature request"
-description: Suggest an idea for this project.
-labels: [":rocket: feature-request"]
+name: Feature request
+description: Propose a focused improvement to Weshnet
+title: "feature: "
+labels:
+  - enhancement
 body:
   - type: checkboxes
+    id: checks
     attributes:
-      label: Is there an existing issue for this?
-      description: >-
-        Please search to see if an issue already exists for this feature
-        request.
+      label: Preflight checks
       options:
-        - label: I have searched the existing issues
+        - label: I searched existing issues and documentation for this proposal.
           required: true
+        - label: This request is for Weshnet rather than application-specific user interface behavior.
+          required: true
+
   - type: textarea
-    id: feature
+    id: problem
     attributes:
-      label: Feature request
-      description: >-
-        Provide a detailed description of the change or addition you are
-        proposing.
-      placeholder: There should be ...
+      label: Problem or use case
+      description: Explain the concrete limitation, who encounters it, and why existing APIs are insufficient.
     validations:
       required: true
+
   - type: textarea
-    id: context
+    id: proposal
     attributes:
-      label: Context
-      description: >-
-        Why is this change important to you? How would you use it? How can it
-        benefit other users?
-      placeholder: This feature request is important because ...
+      label: Proposed behavior
+      description: Describe the desired behavior and public API from a caller's perspective.
     validations:
       required: true
-  - type: textarea
-    id: implementation
+
+  - type: dropdown
+    id: area
     attributes:
-      label: Possible implementation
-      description: >-
-        Not obligatory, but suggest an idea for implementing addition or change.
-      placeholder: This feature could be implemented by ...
+      label: Area
+      options:
+        - Protocol API
+        - Messaging and replication
+        - Discovery and rendezvous
+        - Networking and transports
+        - Identity and credentials
+        - Storage
+        - Mobile bindings
+        - Developer tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and privacy
+      description: Describe effects on protocol compatibility, stored data, network behavior, metadata exposure, and privacy. Write "None" if there are none.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Explain existing workarounds or other designs you considered.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add sketches, API examples, related specifications, or implementation notes.

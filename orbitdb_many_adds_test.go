@@ -7,12 +7,12 @@ import (
 	"os"
 	"testing"
 
+	orbitdb "berty.tech/go-orbit-db"
 	"github.com/libp2p/go-libp2p/core/crypto"
 
-	orbitdb "berty.tech/go-orbit-db"
-	"berty.tech/weshnet/v2/pkg/cryptoutil"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 func TestAdd(t *testing.T) {
@@ -41,7 +41,7 @@ func TestAdd(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	ks := &BertySignedKeyStore{}
+	ks := &WeshSignedKeyStore{}
 	err = ks.SetKey(sigk)
 	if err != nil {
 		t.Fatal(err)

@@ -3,19 +3,19 @@
 //  ble
 //
 //  Created by sacha on 23/05/2019.
-//  Copyright © 2019 berty. All rights reserved.
+//  Copyright © 2019 wesh. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #import "BleInterface_darwin.h"
-#import "BertyDevice_darwin.h"
+#import "WeshDevice_darwin.h"
 #import "PeerManager.h"
 #import "CountDownLatch_darwin.h"
 #import "WriteDataCache.h"
 
-#define LOCAL_DOMAIN "tech.berty.bty"
+#define LOCAL_DOMAIN "tech.wesh.bty"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readwrite) BOOL pmEnable;
 @property (readwrite) BOOL cmEnable;
 @property (readwrite) int psm;
-@property (nonatomic, strong, nonnull) CBMutableService *bertyService;
+@property (nonatomic, strong, nonnull) CBMutableService *weshService;
 @property (nonatomic, strong, nonnull) CBMutableService *nameService;
 @property (nonatomic, strong, nonnull) CBMutableCharacteristic *peerIDCharacteristic;
 @property (nonatomic, strong, nonnull) CBMutableCharacteristic *writerCharacteristic;
@@ -59,11 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)stopScanning;
 - (void)startAdvertising;
 - (void)stopAdvertising;
-- (void)disconnect:(BertyDevice *__nonnull)device;
+- (void)disconnect:(WeshDevice *__nonnull)device;
 - (void)closeAllConnections;
-- (BertyDevice *__nullable)findPeripheralFromIdentifier:(NSUUID *__nonnull)identifier;
-- (BertyDevice *__nullable)findPeripheralFromPID:(NSString *__nonnull)peerID;
-- (BOOL)writeAndNotify:(BertyDevice *__nonnull)device data:(NSData *__nonnull)data;
+- (WeshDevice *__nullable)findPeripheralFromIdentifier:(NSUUID *__nonnull)identifier;
+- (WeshDevice *__nullable)findPeripheralFromPID:(NSString *__nonnull)peerID;
+- (BOOL)writeAndNotify:(WeshDevice *__nonnull)device data:(NSData *__nonnull)data;
 
 @end
 

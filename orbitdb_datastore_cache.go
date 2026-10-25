@@ -3,12 +3,12 @@ package weshnet
 import (
 	"context"
 
+	"berty.tech/go-orbit-db/address"
+	"berty.tech/go-orbit-db/cache"
 	datastore "github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-datastore/query"
 
-	"berty.tech/go-orbit-db/address"
-	"berty.tech/go-orbit-db/cache"
-	"berty.tech/weshnet/v2/internal/datastoreutil"
+	"github.com/core-laboratories/weshnet/v2/internal/datastoreutil"
 )
 
 type datastoreCache struct {

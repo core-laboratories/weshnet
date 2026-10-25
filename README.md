@@ -1,40 +1,135 @@
 # Wesh Network Toolkit
 
-[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/berty.tech/weshnet)
+Weshnet is a messenger-independent toolkit for private, resilient,
+peer-to-peer communication. Applications can embed the Wesh protocol and
+communicate directly when peers are nearby, through configured rendezvous and
+relay infrastructure when they are remote, and across intermittent network
+connections.
 
-The Wesh network toolkit lets your application use the
-[Wesh protocol](https://berty.tech/docs/protocol) to support privacy-based, off-grid, peer-to-peer communication.
-Wesh powers [Berty Messenger](https://github.com/berty/berty#readme), and now you can use
-the Wesh network toolkit directly.
+The runtime is implemented in Go. Its protocol surface is exposed through gRPC,
+so it can be integrated with Go, mobile bindings, and any language supported by
+the gRPC toolchain.
 
-Your application interfaces to Wesh based on [gRPC](https://grpc.io). So even though
-the core Wesh code is written in Go, Wesh works with your application written in Go, Python
-or [other languages](https://grpc.io/docs/languages) supported by gRPC.
+## Capabilities
 
-For details, see the Wesh website at https://wesh.network .
-The website includes [blog tutorials](https://wesh.network/blog) which introduce you to
-Wesh and walk you through some example applications and background of the Wesh protocol. 
+- Encrypted one-to-one and multi-member group communication
+- Account, contact, device, and group lifecycle management
+- Peer discovery through local and remote rendezvous mechanisms
+- Transport support for libp2p and platform proximity drivers
+- Persistent event logs and message replication
+- Configurable relay and rendezvous infrastructure
+- Rotating rendezvous seeds for retiring previous discovery material
+- Generated protobuf, gRPC, and OpenAPI interfaces
 
-## Usage
+## Requirements
 
-```go
-import "berty.tech/weshnet"
+- Go version declared in [`go.mod`](go.mod)
+- Git and Make
+- Repository tools installed through `asdf` for generation and lint tasks
+- Docker when regenerating protocol artifacts or running infrastructure
+
+See the [installation guide](docs/installation.md) for platform-specific setup.
+
+## Install
+
+Use the versioned module path because Weshnet is a Go module at major version 2:
+
+```sh
+go get github.com/core-laboratories/weshnet/v2@latest
 ```
 
-Online API documentation is at https://buf.build/berty-technologies/weshnet .
+Import the root package:
 
-## Get the code
+```go
+import "github.com/core-laboratories/weshnet/v2"
+```
 
-To get the code and build, see the file
-[INSTALL.md](https://github.com/berty/weshnet/blob/master/INSTALL.md).
+## Minimal service setup
 
-## Feedback
+Applications normally create a persistent service client and configure relay or
+rendezvous addresses for their environment:
 
-For bug reports, feature requests or questions, please open a
-[GitHub issue](https://github.com/berty/weshnet/issues/new/choose).
+```go
+package main
 
-<!--
-## Examples
+import (
+	"log"
 
-_TODO: add links to internal examples + links to external repos using the protocol_
--->
+	weshnet "github.com/core-laboratories/weshnet/v2"
+)
+
+func main() {
+	client, err := weshnet.NewPersistentServiceClient("./wesh-data")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	// Use client.ClientConn() with generated protocol clients.
+}
+```
+
+For production use, handle shutdown errors, configure logging, and provide the
+network options required by your deployment.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `api/go-internal` | Internal protobuf definitions used by the runtime |
+| `api/protocol` | Public protocol and service definitions |
+| `docs` | Guides, architecture records, and generated API documentation |
+| `infra` | Rendezvous and relay deployment resources |
+| `internal` | Private implementation packages |
+| `pkg` | Reusable protocol, transport, discovery, and utility packages |
+| `tool` | Development and benchmarking tools |
+
+## Development
+
+Run the standard validation suite:
+
+```sh
+make test
+```
+
+Useful targets include:
+
+```sh
+make unittest
+make lint
+make lint.fix
+make generate
+```
+
+Generation updates checked-in protobuf artifacts. Review generated changes
+before committing them.
+
+## Documentation
+
+- [Documentation index](docs/README.md)
+- [Installation and development](docs/installation.md)
+- [Protocol overview](docs/protocol.md)
+- [Network status reporting](docs/network-status.md)
+- [Infrastructure deployment](docs/infrastructure.md)
+- [Architecture](docs/architecture/overview.md)
+- [Protocol API reference](docs/apis/protocoltypes.md)
+
+## Compatibility
+
+The `/v2` suffix is part of the public Go module identity and must remain in
+imports. Protocol or storage changes may require coordinated upgrades across
+peers. Review release notes and migration guidance before upgrading production
+deployments.
+
+## Contributing and security
+
+Read the [contribution guide](CONTRIBUTING.md) before opening a pull request.
+Report vulnerabilities privately according to the
+[security policy](SECURITY.md).
+
+For regular bug reports and feature requests, use the
+[GitHub issue tracker](https://github.com/core-laboratories/weshnet/issues).
+
+## License
+
+Weshnet is available under the [MIT License](LICENSE-MIT).

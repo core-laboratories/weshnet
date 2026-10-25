@@ -10,6 +10,10 @@ import (
 	"time"
 	"unsafe"
 
+	"berty.tech/go-orbit-db/baseorbitdb"
+	"berty.tech/go-orbit-db/iface"
+	"berty.tech/go-orbit-db/pubsub/directchannel"
+	"berty.tech/go-orbit-db/pubsub/pubsubraw"
 	"github.com/dgraph-io/badger/v2/options"
 	ds "github.com/ipfs/go-datastore"
 	ds_sync "github.com/ipfs/go-datastore/sync"
@@ -29,26 +33,22 @@ import (
 	"go.uber.org/zap"
 	"moul.io/srand"
 
-	"berty.tech/go-orbit-db/baseorbitdb"
-	"berty.tech/go-orbit-db/iface"
-	"berty.tech/go-orbit-db/pubsub/directchannel"
-	"berty.tech/go-orbit-db/pubsub/pubsubraw"
-	"berty.tech/weshnet/v2/internal/bertyversion"
-	"berty.tech/weshnet/v2/internal/datastoreutil"
-	"berty.tech/weshnet/v2/pkg/bertyvcissuer"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	ipfs_mobile "berty.tech/weshnet/v2/pkg/ipfsutil/mobile"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/rendezvous"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	tinder "berty.tech/weshnet/v2/pkg/tinder"
-	"berty.tech/weshnet/v2/pkg/tyber"
+	"github.com/core-laboratories/weshnet/v2/internal/datastoreutil"
+	"github.com/core-laboratories/weshnet/v2/internal/weshversion"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	ipfs_mobile "github.com/core-laboratories/weshnet/v2/pkg/ipfsutil/mobile"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/rendezvous"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	tinder "github.com/core-laboratories/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
+	"github.com/core-laboratories/weshnet/v2/pkg/vcissuer"
 )
 
 var _ Service = (*service)(nil)
 
-// Service is the main Berty Protocol interface
+// Service is the main Wesh Protocol interface
 type Service interface {
 	protocoltypes.ProtocolServiceServer
 
@@ -75,10 +75,13 @@ type service struct {
 	muRefreshprocess       sync.RWMutex
 	swiper                 *Swiper
 	peerStatusManager      *ConnectednessManager
+	networkStatusObserver  *networkStatusObserver
 	accountEventBus        event.Bus
 	contactRequestsManager *contactRequestsManager
-	vcClient               *bertyvcissuer.Client
+	vcClient               *vcissuer.Client
 	secretStore            secretstore.SecretStore
+	rendezvousSeeds        map[string][]byte
+	rendezvousSeedsMu      sync.Mutex
 
 	protocoltypes.UnimplementedProtocolServiceServer
 }
@@ -98,6 +101,9 @@ type Opts struct {
 	close              func() error
 	SecretStore        secretstore.SecretStore
 	PrometheusRegister prometheus.Registerer
+	// NetworkStatusEvidenceSource optionally supplies independently verified,
+	// read-only path evidence for network status reporting.
+	NetworkStatusEvidenceSource NetworkConnectionEvidenceSource
 	// P2PStaticRelays is only used if IpfsCoreAPI is nil
 	P2PStaticRelays []string
 	// P2PRdvpMaddrs is only used if TinderService is nil
@@ -233,8 +239,8 @@ func (opts *Opts) applyDefaults(ctx context.Context) error {
 		}
 		drivers = append(drivers, localdisc)
 
-		// rdvp driver. Imitate berty configIPFSRouting
-		// https://github.com/berty/berty/blob/5a8b9cb8524c1287ab2533a9e186ac8bde7f2b57/go/internal/initutil/ipfs.go#L684
+		// The rendezvous driver requires DHT routing when no explicit routing
+		// implementation was provided by the host application.
 		rdvpeers, err := ipfsutil.ParseAndResolveMaddrs(ctx, opts.Logger, opts.P2PRdvpMaddrs)
 		if err != nil {
 			return fmt.Errorf("unable to resolve maddrs: %w", err)
@@ -356,7 +362,7 @@ func NewService(opts Opts) (_ Service, err error) {
 
 	opts.Logger = opts.Logger.Named("pt")
 
-	ctx, _, endSection := tyber.Section(tyber.ContextWithoutTraceID(ctx), opts.Logger, fmt.Sprintf("Initializing ProtocolService version %s", bertyversion.Version))
+	ctx, _, endSection := tyber.Section(tyber.ContextWithoutTraceID(ctx), opts.Logger, fmt.Sprintf("Initializing ProtocolService version %s", weshversion.Version))
 	defer func() { endSection(err, "") }()
 
 	accountEventBus := eventbus.NewBus(
@@ -415,6 +421,11 @@ func NewService(opts Opts) (_ Service, err error) {
 		accountEventBus:        accountEventBus,
 		contactRequestsManager: contactRequestsManager,
 	}
+	var observedNetwork network.Network
+	if opts.Host != nil {
+		observedNetwork = opts.Host.Network()
+	}
+	s.networkStatusObserver = newNetworkStatusObserver(ctx, observedNetwork, opts.NetworkStatusEvidenceSource)
 
 	s.startGroupDeviceMonitor()
 
@@ -430,6 +441,10 @@ func (s *service) Close() error {
 
 	var err error
 	pks := []crypto.PubKey{}
+
+	if s.networkStatusObserver != nil {
+		s.networkStatusObserver.Close()
+	}
 
 	// gather public keys
 	s.lock.Lock()

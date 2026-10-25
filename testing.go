@@ -12,6 +12,9 @@ import (
 	"testing"
 	"time"
 
+	encrepo "berty.tech/go-ipfs-repo-encrypted"
+	orbitdb "berty.tech/go-orbit-db"
+	"berty.tech/go-orbit-db/pubsub/pubsubraw"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -26,16 +29,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 
-	encrepo "berty.tech/go-ipfs-repo-encrypted"
-	orbitdb "berty.tech/go-orbit-db"
-	"berty.tech/go-orbit-db/pubsub/pubsubraw"
-	"berty.tech/weshnet/v2/internal/datastoreutil"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	"berty.tech/weshnet/v2/pkg/testutil"
-	"berty.tech/weshnet/v2/pkg/tinder"
+	"github.com/core-laboratories/weshnet/v2/internal/datastoreutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
 )
 
 const InMemoryDir = ":memory:"

@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/hex"
 
-	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
-
 	"berty.tech/go-ipfs-log/identityprovider"
 	orbitdb "berty.tech/go-orbit-db"
 	"berty.tech/go-orbit-db/accesscontroller"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
+
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
-func DefaultOrbitDBOptions(g *protocoltypes.Group, options *orbitdb.CreateDBOptions, keystore *BertySignedKeyStore, storeType string, groupOpenMode GroupOpenMode) (*orbitdb.CreateDBOptions, error) {
+func DefaultOrbitDBOptions(g *protocoltypes.Group, options *orbitdb.CreateDBOptions, keystore *WeshSignedKeyStore, storeType string, groupOpenMode GroupOpenMode) (*orbitdb.CreateDBOptions, error) {
 	var err error
 
 	if options == nil {
@@ -90,14 +90,14 @@ func defaultACForGroup(g *protocoltypes.Group, storeType string) (accesscontroll
 	param := &accesscontroller.CreateAccessControllerOptions{
 		Access:       access,
 		SkipManifest: true,
-		Type:         "bertysimple",
+		Type:         "weshsimple",
 		Address:      address,
 	}
 
 	return param, nil
 }
 
-func defaultIdentityForGroup(ctx context.Context, g *protocoltypes.Group, ks *BertySignedKeyStore) (*identityprovider.Identity, error) {
+func defaultIdentityForGroup(ctx context.Context, g *protocoltypes.Group, ks *WeshSignedKeyStore) (*identityprovider.Identity, error) {
 	sigPK, err := g.GetSigningPubKey()
 	if err != nil {
 		return nil, errcode.ErrCode_TODO.Wrap(err)
@@ -120,7 +120,7 @@ func defaultIdentityForGroup(ctx context.Context, g *protocoltypes.Group, ks *Be
 	return identity, nil
 }
 
-func readIdentityForGroup(g *protocoltypes.Group, ks *BertySignedKeyStore) (*identityprovider.Identity, error) {
+func readIdentityForGroup(g *protocoltypes.Group, ks *WeshSignedKeyStore) (*identityprovider.Identity, error) {
 	sigPK, err := g.GetSigningPubKey()
 	if err != nil {
 		return nil, errcode.ErrCode_TODO.Wrap(err)

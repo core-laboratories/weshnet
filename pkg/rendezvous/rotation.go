@@ -1,6 +1,7 @@
 package rendezvous
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"sync"
@@ -15,7 +16,7 @@ var (
 type RotationInterval struct {
 	interval time.Duration
 
-	cacheTopics    map[string]*Point
+	cacheTopics    map[string][]*Point
 	cacheRotations map[string]*Point
 	muCache        sync.RWMutex
 }
@@ -29,16 +30,28 @@ func NewStaticRotationInterval() *RotationInterval {
 func NewRotationInterval(interval time.Duration) *RotationInterval {
 	return &RotationInterval{
 		interval:       interval,
-		cacheTopics:    make(map[string]*Point),
+		cacheTopics:    make(map[string][]*Point),
 		cacheRotations: make(map[string]*Point),
 	}
 }
 
 func (r *RotationInterval) RegisterRotation(at time.Time, topic string, seed []byte) {
-	point := r.NewRendezvousPointForPeriod(at, topic, seed)
+	point := r.NewRendezvousPointForPeriod(at, topic, append([]byte(nil), seed...))
 	r.muCache.Lock()
+	r.removeSeedLocked(topic, seed)
 	r.registerPoint(point)
 	r.muCache.Unlock()
+}
+
+// UnregisterRotation removes a seed from a topic. If multiple seeds are
+// registered, PointForTopic falls back to the previously registered seed.
+// Existing rotation aliases are removed immediately so retired rendezvous
+// points can no longer be used to decode new envelopes.
+func (r *RotationInterval) UnregisterRotation(topic string, seed []byte) bool {
+	r.muCache.Lock()
+	defer r.muCache.Unlock()
+
+	return r.removeSeedLocked(topic, seed)
 }
 
 func (r *RotationInterval) RoundTimePeriod(at time.Time) time.Time {
@@ -72,7 +85,8 @@ func (r *RotationInterval) PointForTopic(topic string) (*Point, error) {
 	r.muCache.Lock()
 	defer r.muCache.Unlock()
 
-	if point, ok := r.cacheTopics[topic]; ok {
+	if points := r.cacheTopics[topic]; len(points) > 0 {
+		point := points[len(points)-1]
 		if point.IsExpired() {
 			point = r.rotate(point, DefaultRotationInterval)
 		}
@@ -99,15 +113,50 @@ func (r *RotationInterval) NewRendezvousPointForPeriod(at time.Time, topic strin
 
 func (r *RotationInterval) registerPoint(point *Point) {
 	keytopic, keyrotation := point.keys()
-	r.cacheTopics[keytopic] = point
+	r.cacheTopics[keytopic] = append(r.cacheTopics[keytopic], point)
 	r.cacheRotations[keyrotation] = point
+}
+
+func (r *RotationInterval) removeSeedLocked(topic string, seed []byte) bool {
+	points := r.cacheTopics[topic]
+	removed := false
+	kept := points[:0]
+	for _, point := range points {
+		if bytes.Equal(point.seed, seed) {
+			_, rotation := point.keys()
+			delete(r.cacheRotations, rotation)
+			removed = true
+			continue
+		}
+		kept = append(kept, point)
+	}
+	for rotation, point := range r.cacheRotations {
+		if point.topic == topic && bytes.Equal(point.seed, seed) {
+			delete(r.cacheRotations, rotation)
+			removed = true
+		}
+	}
+	if len(kept) == 0 {
+		delete(r.cacheTopics, topic)
+	} else {
+		r.cacheTopics[topic] = kept
+	}
+	return removed
 }
 
 func (r *RotationInterval) rotate(old *Point, graceperiod time.Duration) *Point {
 	newPoint := old.NextPoint()
 
-	// register new point
-	r.registerPoint(newPoint)
+	points := r.cacheTopics[old.topic]
+	for i, point := range points {
+		if point == old {
+			points[i] = newPoint
+			break
+		}
+	}
+	r.cacheTopics[old.topic] = points
+	_, newRotation := newPoint.keys()
+	r.cacheRotations[newRotation] = newPoint
 
 	cleanuptime := max(time.Until(newPoint.Deadline().Add(graceperiod)), 0)
 	// cleanup after the grace period
@@ -172,5 +221,5 @@ func (p *Point) TTL() time.Duration {
 }
 
 func (p *Point) IsExpired() bool {
-	return p.TTL() > 0
+	return p.TTL() <= 0
 }

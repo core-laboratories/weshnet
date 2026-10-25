@@ -10,11 +10,11 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"berty.tech/weshnet/v2/pkg/grpcutil"
-	"berty.tech/weshnet/v2/pkg/ipfsutil"
-	ipfs_mobile "berty.tech/weshnet/v2/pkg/ipfsutil/mobile"
-	"berty.tech/weshnet/v2/pkg/logutil"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/grpcutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
+	ipfs_mobile "github.com/core-laboratories/weshnet/v2/pkg/ipfsutil/mobile"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 const (

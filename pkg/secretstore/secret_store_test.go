@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 func Test_PushGroupReferences(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"berty.tech/weshnet/v2/internal/notify"
+	"github.com/core-laboratories/weshnet/v2/internal/notify"
 )
 
 type State int

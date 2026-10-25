@@ -1,7 +1,17 @@
-.PHONY: all
+.PHONY: all config up logs down ps genkey ip
+
 all: up ps logs
 
-up:
+config:
+	@test -f .env || { echo "Copy .env.example to .env and configure it first." >&2; exit 1; }
+	@set -a; . ./.env; set +a; \
+		for name in RDVP_IMAGE RDVP_PK ANNOUNCE_SERVER EMITTER_SECRET_KEY EMITTER_LICENSE; do \
+			eval "value=\$$$${name}"; \
+			test -n "$$value" || { echo "$$name is required in .env" >&2; exit 1; }; \
+		done
+	docker compose config --quiet
+
+up: config
 	docker compose up -d
 
 logs:
@@ -11,7 +21,16 @@ down ps:
 	docker compose $@
 
 genkey:
-	echo RDVP_PK=`docker compose run server genkey` > .env
+	@test -f .env || cp .env.example .env
+	@set -a; . ./.env; set +a; \
+		test -n "$$RDVP_IMAGE" || { echo "RDVP_IMAGE is required in .env" >&2; exit 1; }; \
+		key="$$(docker run --rm --entrypoint rdvp "$$RDVP_IMAGE" genkey)"; \
+		test -n "$$key"; \
+		if grep -q '^RDVP_PK=' .env; then \
+			sed -i.bak "s|^RDVP_PK=.*|RDVP_PK=$$key|" .env && rm -f .env.bak; \
+		else \
+			printf '\nRDVP_PK=%s\n' "$$key" >> .env; \
+		fi
 
 ip:
-	curl ifconfig.co
+	curl --fail --silent --show-error https://ifconfig.co

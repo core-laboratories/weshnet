@@ -1,23 +1,19 @@
 name: Go
+
 on:
   push:
-    tags:
-      - v*
-    branches:
-      - main
-    paths:
-      - "**"
-      - "!**.md"
-      - "go.*"
-      - "**.go"
-      - ".github/workflows/go.yml"
+    tags: ["v*"]
+    branches: [main]
+    paths: ["**", "!**.md", "go.*", "**.go", ".github/workflows/go.yml"]
   pull_request:
-    paths:
-      - "**"
-      - "!**.md"
-      - "go.*"
-      - "**.go"
-      - ".github/workflows/go.yml"
+    paths: ["**", "!**.md", "go.*", "**.go", ".github/workflows/go.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: go-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   golangci-lint:
@@ -25,262 +21,100 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          asdf_version: 0.16.7
-
-      - name: Setup golang
-        run: |
-          asdf plugin add golang
-          asdf install golang
-
-      - name: Setup golangci-lint
-        run: |
-          asdf plugin add golangci-lint
-          asdf install golangci-lint
-
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
       - name: Run golangci-lint
-        run: make lint
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: v2.12.2
 
-  # this is not very common to have a job that checks the flappy tests.
-  #
-  # reason: some tests are flappy, they works, but not always;
-  #         this job checks that they are working sometimes.
-  #         if this job fails, then a test is "broken", not "flappy".
-  #
-  #         summary: this job checks that "flappy tests" do not become "broken tests".
-  #
-  # we hope we can remove this job because all the tests are stable 100% of the time
   flappy-tests:
     name: Flappy tests (Linux)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Load variables from file
-        uses: antifree/json-to-variables@v1.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          filename: .github/workflows/utils/variables.json
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
-        with:
-          asdf_version: 0.16.7
-
-      - name: Setup go
-        run: |
-          asdf plugin add golang
-          asdf install golang
-          echo "go_version=$(asdf current golang | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
-
-      - name: Cache go modules
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
-
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
       - name: Avoid triggering make generate
         run: touch gen.sum
-
-      - name: Fetch go modules
+      - name: Fetch Go modules
         run: go mod download
-
-      - name: Compile the testing binaries
-        run: |
-          pushd .  && go test -c -o ./tests.bin . && popd
-
+      - name: Compile the testing binary
+        run: go test -c -o ./tests.bin .
       - name: Check go.mod and go.sum
         run: |
           go mod tidy -v
           git --no-pager diff go.mod go.sum
           git --no-pager diff --quiet go.mod go.sum
-
       - name: Run fast flappy tests
         env:
           TEST_SPEED: fast
           TEST_STABILITY: flappy
         run: make go.flappy-tests
 
-  go-tests-on-linux:
-    name: Stable tests (Linux)
-    runs-on: ubuntu-latest
+  stable-tests:
+    name: Stable tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Load variables from file
-        uses: antifree/json-to-variables@v1.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          filename: .github/workflows/utils/variables.json
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
-        with:
-          asdf_version: 0.16.7
-
-      - name: Setup go
-        run: |
-          asdf plugin add golang
-          asdf install golang
-          echo "go_version=$(asdf current golang | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
-
-      - name: Cache go modules
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
-
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
       - name: Check go.mod and go.sum
-        run: |
-          go mod tidy -v
-          git --no-pager diff go.mod go.sum
-          git --no-pager diff --quiet go.mod go.sum
-
-      - name: Run fast tests multiple times
-        env:
-          TEST_SPEED: fast
-          GO_TEST_OPTS: -test.timeout=600s -count 1
-        run: set -o pipefail; make go.unittest | tee test_log.txt
-
-      - name: Run all tests
-        env:
-          TEST_SPEED: any
-          GO_TEST_OPTS: -test.timeout=600s -count 1
-        run: make go.unittest
-
-      - name: Run all tests with race flag and generate coverage
-        env:
-          TEST_SPEED: any
-          GO_TEST_OPTS: -test.timeout=1200s -count=1 -race -cover  -coverprofile=coverage.txt -covermode=atomic
-        run: make go.unittest
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3.1.1
-        env:
-          OS: ${{ runner.os }}
-          GOLANG: ${{ env.go_version }}
-        with:
-          file: ./go/coverage.txt
-          flags: go.unittests
-          env_vars: OS,GOLANG
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
-  go-tests-on-windows:
-    name: Stable tests (Windows)
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Load variables from file
-        uses: antifree/json-to-variables@v1.0.1
-        with:
-          filename: .github/workflows/utils/variables.json
-
-      - name: Get go version
         shell: bash
-        run: echo "go_version=$(cat .tool-versions | grep '^golang [0-9]\+\.[0-9]\+\.[0-9]\+.*$' | cut -d ' ' -f 2)" >> $GITHUB_ENV
-
-      - name: Setup go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.go_version }}
-
-      - name: Cache go modules
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
-
-      - name: Check go.mod and go.sum
         run: |
           go mod tidy -v
           git --no-pager diff go.mod go.sum
           git --no-pager diff --quiet go.mod go.sum
-
       - name: Run fast tests multiple times
+        if: runner.os == 'Windows'
         env:
           TEST_SPEED: fast
-        run: go.exe test ./...  -buildmode=exe -timeout=600s -count=5
-
-      - name: Run all tests
-        env:
-          TEST_SPEED: any
-        run: go.exe test ./...  -buildmode=exe -timeout=600s -count=1
-
-  go-tests-on-macos:
-    name: Stable tests (macOS)
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Load variables from file
-        uses: antifree/json-to-variables@v1.0.1
-        with:
-          filename: .github/workflows/utils/variables.json
-
-      - name: Setup asdf
-        uses: asdf-vm/actions/setup@9cd779f40fe38688dd19505ccbc4eaaf018b44e7
-        with:
-          asdf_version: 0.16.7
-
-      - name: Setup go
-        run: |
-          asdf plugin add golang
-          asdf install golang
-          echo "go_version=$(asdf current golang | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
-
-      - name: Cache go modules
-        uses: actions/cache@v4
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-${{ env.go_version }}-${{ env.json_cache-versions_go }}-
-
-      - name: Check go.mod and go.sum
-        run: |
-          go mod tidy -v
-          git --no-pager diff go.mod go.sum
-          git --no-pager diff --quiet go.mod go.sum
-
-      - name: Run fast tests multiple times
+        run: go test ./... -buildmode=exe -timeout=600s -count=5
+      - name: Run fast tests
+        if: runner.os != 'Windows'
         env:
           TEST_SPEED: fast
-          GO_TEST_OPTS: -test.timeout=600s -count 1
+          GO_TEST_OPTS: -test.timeout=600s -count=1
         run: set -o pipefail; make go.unittest | tee test_log.txt
-
+      - name: Run all tests on Windows
+        if: runner.os == 'Windows'
+        env:
+          TEST_SPEED: any
+        run: go test ./... -buildmode=exe -timeout=600s -count=1
       - name: Run all tests
+        if: runner.os != 'Windows'
         env:
           TEST_SPEED: any
-          GO_TEST_OPTS: -test.timeout=600s -count 1
+          GO_TEST_OPTS: -test.timeout=600s -count=1
         run: make go.unittest
-
-      - name: Run all tests with race flag and generate coverage
+      - name: Run race tests and collect coverage
+        if: runner.os != 'Windows'
         env:
           TEST_SPEED: any
-          GO_TEST_OPTS: -test.timeout=1200s -count=1 -race -cover  -coverprofile=coverage.txt -covermode=atomic
+          GO_TEST_OPTS: -test.timeout=1200s -count=1 -race -cover -coverprofile=coverage.txt -covermode=atomic
         run: make go.unittest
-
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3.1.1
-        env:
-          OS: ${{ runner.os }}
-          GOLANG: ${{ env.go_version }}
+        if: runner.os != 'Windows'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
-          file: ./go/coverage.txt
+          files: ./coverage.txt
           flags: go.unittests
-          env_vars: OS,GOLANG
-          name: codecov-umbrella
+          name: codecov-${{ runner.os }}
           fail_ci_if_error: false
-
-  # TODO: consider adding various GOARCH check per OS.
-  #       i.e., to validate that we build on 32/64bit.
+          token: ${{ secrets.CODECOV_TOKEN }}

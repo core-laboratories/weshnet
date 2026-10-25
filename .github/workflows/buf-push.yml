@@ -1,23 +1,23 @@
 name: buf-push
+
+permissions:
+  contents: read
+
+concurrency:
+  group: buf-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches:
       - main
 
-# from https://docs.buf.build/ci-cd/github-actions#buf-push
 jobs:
   buf-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: bufbuild/buf-setup-action@v1
-      # @TODO(gfanton): enable this ?
-      # - uses: bufbuild/buf-lint-action@v1
-      # - uses: bufbuild/buf-breaking-action@v1
-      #   with:
-      #     # The 'main' branch of the GitHub repository that defines the module.
-      #     against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1"
-      - uses: bufbuild/buf-push-action@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: bufbuild/buf-action@85aebf73123b5c15fd5528aaecbf9129cddf7fa7 # v1.6.0
         with:
-          input: "api/protocol"
-          buf_token: ${{ secrets.BUF_TOKEN }}
+          input: api/protocol
+          token: ${{ secrets.BUF_TOKEN }}
+          push: true

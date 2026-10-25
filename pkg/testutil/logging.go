@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 	"moul.io/zapring"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 const defaultLoggingFilters = "info+:bty.test* error+:*,-ipfs*,-*.tyber"
@@ -38,13 +38,13 @@ func LoggerWithRing(t testing.TB) (*zap.Logger, *zapring.Core, func()) {
 	t.Helper()
 
 	loggerInitOnce.Do(func() {
-		if val := os.Getenv("BERTY_LOGFILTERS"); val != "" {
+		if val := os.Getenv("WESH_LOGFILTERS"); val != "" {
 			*logFilters = val
 		}
-		if val := os.Getenv("BERTY_LOGFILE"); val != "" {
+		if val := os.Getenv("WESH_LOGFILE"); val != "" {
 			*logFile = val
 		}
-		if val := os.Getenv("BERTY_LOGFORMAT"); val != "" {
+		if val := os.Getenv("WESH_LOGFORMAT"); val != "" {
 			*logFormat = val
 		}
 		*logFilters = strings.ReplaceAll(*logFilters, ":default:", defaultLoggingFilters)

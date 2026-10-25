@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"berty.tech/weshnet/v2"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
-	"berty.tech/weshnet/v2/pkg/secretstore"
-	"berty.tech/weshnet/v2/pkg/testutil"
+	"github.com/core-laboratories/weshnet/v2"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/secretstore"
+	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
 
 func TestTestingClient_impl(t *testing.T) {

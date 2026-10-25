@@ -1,8 +1,12 @@
-build:
-	tar -czh . | docker build -t relay - # need to tar because of the symlink
-.PHONY: build
+.PHONY: build config up logs down ps
 
-up:
+build:
+	docker build --pull --tag weshnet-relay:0.5.0 .
+
+config:
+	docker compose config --quiet
+
+up: config
 	docker compose up -d
 
 logs:

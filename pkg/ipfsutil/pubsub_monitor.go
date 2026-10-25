@@ -10,7 +10,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 // PubsubMonitor is an EventTracer
@@ -84,8 +84,8 @@ func (pt *PubsubMonitor) Trace(e *ps_pb.TraceEvent) {
 			PeerID:    peer,
 		})
 
-	case ps_pb.TraceEvent_REMOVE_PEER:
-		peerid, err := peer.IDFromBytes(e.GetRemovePeer().GetPeerID())
+	case ps_pb.TraceEvent_ON_CLOSED_OUTBOUND_STREAM:
+		peerid, err := peer.IDFromBytes(e.GetOnClosedOutboundStream().GetPeerID())
 		if err != nil {
 			pt.logger.Warn("unable to parse peerid",
 				zap.String("type", e.GetType().String()),

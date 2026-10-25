@@ -1,9 +1,0 @@
-version: v1
-plugins:
-  - plugin: doc
-    out: ./
-    opt: markdown,api.md.tmp
-  - plugin: swagger
-    out: ./
-    opt:
-      - logtostderr=true

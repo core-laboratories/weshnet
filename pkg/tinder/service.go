@@ -10,7 +10,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 type Service struct {

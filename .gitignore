@@ -18,6 +18,7 @@ gin-bin
 out/
 profile.out
 vendor/
+/orbitdb/
 debug.log
 
 benchmark_result.json

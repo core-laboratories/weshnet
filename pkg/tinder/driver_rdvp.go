@@ -1,4 +1,4 @@
-// from https://github.com/berty/go-libp2p-rendezvous/blob/implement-spec/discovery.go
+// Implements discovery over the libp2p rendezvous protocol.
 
 package tinder
 

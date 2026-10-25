@@ -9,6 +9,7 @@ import (
 	"io"
 	"strings"
 
+	orbitdb "berty.tech/go-orbit-db"
 	"github.com/ipfs/go-cid"
 	cbornode "github.com/ipfs/go-ipld-cbor"
 	coreiface "github.com/ipfs/kubo/core/coreiface"
@@ -17,9 +18,8 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
-	orbitdb "berty.tech/go-orbit-db"
-	"berty.tech/weshnet/v2/pkg/errcode"
-	"berty.tech/weshnet/v2/pkg/protocoltypes"
+	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
 const (

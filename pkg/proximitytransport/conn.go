@@ -16,7 +16,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"berty.tech/weshnet/v2/pkg/logutil"
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
 
 // Conn is a manet.Conn.

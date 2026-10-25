@@ -1,0 +1,98 @@
+{
+  "info": {
+    "_postman_id": "8f5966d8-24c5-4ff6-a7be-cf24ba45f7df",
+    "name": "Weshnet Protocol API",
+    "description": "HTTP/JSON requests for the generated Weshnet gRPC-Gateway handlers. Set baseUrl to a running gateway endpoint. Every RPC uses POST and protobuf JSON. Request bodies default to an empty object; fill required fields using protocoltypes.md. Streaming RPCs require a gateway and Postman version capable of displaying streamed HTTP responses. These requests operate on the configured Wesh account and may mutate its state; review a request before sending it.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:9091",
+      "type": "string"
+    },
+    {
+      "key": "groupPublicKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rendezvousSeed",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Service and diagnostics",
+      "item": [
+        { "name": "ServiceGetConfiguration", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ServiceGetConfiguration" } },
+        { "name": "SystemInfo", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/SystemInfo" } },
+        { "name": "DebugGroup", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/DebugGroup" } },
+        { "name": "PeerList", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/PeerList" } },
+        { "name": "GetNetworkStatus", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GetNetworkStatus" } }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        { "name": "ContactRequestReference", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestReference" } },
+        { "name": "ContactRequestDisable", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestDisable" } },
+        { "name": "ContactRequestEnable", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestEnable" } },
+        { "name": "ContactRequestResetReference", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestResetReference" } },
+        { "name": "ContactRequestSend", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestSend" } },
+        { "name": "ContactRequestAccept", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestAccept" } },
+        { "name": "ContactRequestDiscard", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactRequestDiscard" } },
+        { "name": "ShareContact", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ShareContact" } },
+        { "name": "DecodeContact", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/DecodeContact" } },
+        { "name": "ContactBlock", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactBlock" } },
+        { "name": "ContactUnblock", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactUnblock" } },
+        { "name": "ContactAliasKeySend", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ContactAliasKeySend" } },
+        { "name": "RefreshContactRequest", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/RefreshContactRequest" } }
+      ]
+    },
+    {
+      "name": "Groups and messages",
+      "item": [
+        { "name": "MultiMemberGroupCreate", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupCreate" } },
+        { "name": "MultiMemberGroupJoin", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupJoin" } },
+        { "name": "MultiMemberGroupLeave", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupLeave" } },
+        { "name": "MultiMemberGroupAliasResolverDisclose", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupAliasResolverDisclose" } },
+        { "name": "MultiMemberGroupAdminRoleGrant", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupAdminRoleGrant" } },
+        { "name": "MultiMemberGroupInvitationCreate", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/MultiMemberGroupInvitationCreate" } },
+        { "name": "GroupRendezvousSeedAdd", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"group_pk\": \"{{groupPublicKey}}\",\n  \"seed\": \"{{rendezvousSeed}}\"\n}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupRendezvousSeedAdd" } },
+        { "name": "GroupRendezvousSeedRemove", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"group_pk\": \"{{groupPublicKey}}\",\n  \"seed\": \"{{rendezvousSeed}}\"\n}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupRendezvousSeedRemove" } },
+        { "name": "AppMetadataSend", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/AppMetadataSend" } },
+        { "name": "AppMessageSend", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/AppMessageSend" } },
+        { "name": "GroupInfo", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupInfo" } },
+        { "name": "ActivateGroup", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ActivateGroup" } },
+        { "name": "DeactivateGroup", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/DeactivateGroup" } }
+      ]
+    },
+    {
+      "name": "Credentials and replication",
+      "item": [
+        { "name": "CredentialVerificationServiceInitFlow", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/CredentialVerificationServiceInitFlow" } },
+        { "name": "CredentialVerificationServiceCompleteFlow", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/CredentialVerificationServiceCompleteFlow" } },
+        { "name": "ReplicationServiceRegisterGroup", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ReplicationServiceRegisterGroup" } },
+        { "name": "OutOfStoreReceive", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/OutOfStoreReceive" } },
+        { "name": "OutOfStoreSeal", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/OutOfStoreSeal" } }
+      ]
+    },
+    {
+      "name": "Streaming",
+      "description": "These endpoints return server streams. Postman support depends on how the gateway frames and flushes streamed responses.",
+      "item": [
+        { "name": "ServiceExportData", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/ServiceExportData" } },
+        { "name": "GroupMetadataList", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupMetadataList" } },
+        { "name": "GroupMessageList", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupMessageList" } },
+        { "name": "GroupDeviceStatus", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/GroupDeviceStatus" } },
+        { "name": "DebugListGroups", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/DebugListGroups" } },
+        { "name": "DebugInspectGroupStore", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/DebugInspectGroupStore" } },
+        { "name": "VerifiedCredentialsList", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/VerifiedCredentialsList" } },
+        { "name": "WatchNetworkStatus", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/weshnet.protocol.v1.ProtocolService/WatchNetworkStatus" } }
+      ]
+    }
+  ],
+  "event": []
+}
