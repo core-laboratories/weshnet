@@ -8,17 +8,8 @@ concurrency:
   cancel-in-progress: true
 on:
   push:
-    tags:
-      - v*
     branches:
       - main
-    paths:
-      - "**"
-      - "!**.md"
-      - "go.*"
-      - "**.go"
-      - ".github/workflows/benchmark.yml"
-  pull_request:
     paths:
       - "**"
       - "!**.md"
@@ -28,17 +19,17 @@ on:
 
 jobs:
   benchmark:
-    if: github.event_name == 'DISABLED'
     name: Run benchmarks
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@b1de5da23ed0a6d14e0aeee8ed52fdd87af2363c # v2.0.2
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 50 # this is to make sure we obtain the target base commit#
 
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -50,43 +41,17 @@ jobs:
         run: go install golang.org/x/perf/cmd/benchstat@latest
 
       - name: Run benchmark
-        run: make go.unittest | tee output_head.txt
+        run: go test -bench=. -benchmem -cpuprofile cpu_head.prof -memprofile mem_head.prof -timeout=1200s -count=5 ./internal/benchmark | tee output_head.txt
         working-directory: .
         env:
           TEST_SPEED: any
-          GO_TEST_PATH: ./internal/benchmark
-          GO_TEST_OPTS: -bench=. -test.benchmem -cpuprofile cpu_head.prof -memprofile mem_head.prof -test.timeout=1200s -count=5
-
-      - name: Checkout base commit
-        run: git checkout ${{ github.event.pull_request.base.sha }}
-        if: github.event_name == 'pull_request'
-
-      - name: Run benchmark (main)
-        run: make go.unittest | tee output_base.txt
-        if: github.event_name == 'pull_request'
-        working-directory: .
-        env:
-          TEST_SPEED: any
-          GO_TEST_PATH: ./internal/benchmark
-          GO_TEST_OPTS: -bench=. -test.benchmem -cpuprofile cpu_base.prof -memprofile mem_base.prof -test.timeout=1200s -count=5
 
       - name: Benchstat
         id: benchstat-main
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           echo 'Benchmark report' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           benchstat output_head.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-        working-directory: .
-
-      - name: Benchstat PR
-        id: benchstat-pr
-        if: github.event_name == 'pull_request'
-        run: |
-          echo 'Benchmark report' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          benchstat output_head.txt output_base.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
         working-directory: .
 
@@ -142,36 +107,6 @@ jobs:
           </ul>
           EOF
 
-      - name: Generate pprof html files (PR)
-        if: github.event_name == 'pull_request'
-        id: pprof-html-files-pr
-        working-directory: .
-        run: |
-          mkdir -p pprof_html/base_comp/{cpu,mem}
-
-          go tool pprof -http 0.0.0.0:9402 --diff_base=./cpu_base.prof -no_browser ./cpu_head.prof < /dev/null &
-          sleep 2
-          curl http://localhost:9402/ui/ > pprof_html/base_comp/cpu/index.html
-          pkill pprof
-          sleep 2
-
-          go tool pprof -http 0.0.0.0:9402 --diff_base=./mem_base.prof -no_browser ./mem_head.prof < /dev/null &
-          sleep 2
-          curl http://localhost:9402/ui/ > pprof_html/base_comp/mem/index.html
-          pkill pprof
-          sleep 2
-
-          cat << EOF >> pprof_html/index.html
-          <h2>CPU diff against ${{ github.event.pull_request.base.sha }}</h2>
-          <ul>
-            <li><a href="./base_comp/cpu/">Graph</a></li>
-          </ul>
-          <h2>Memory diff against ${{ github.event.pull_request.base.sha }}</h2>
-          <ul>
-            <li><a href="./base_comp/mem/">Graph</a></li>
-          </ul>
-          EOF
-
       - name: Generate pprof html files (footer)
         id: pprof-html-files-footer
         working-directory: .
@@ -181,18 +116,8 @@ jobs:
           </html>
           EOF
 
-      # upload arifacts
-      #
       - name: upload artifact (main)
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: github.ref == 'refs/heads/main'
         with:
           name: "bench-main"
-          path: pprof_html
-
-      - name: upload artifact (PR)
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: github.event_name == 'pull_request'
-        with:
-          name: "bench-${{ github.event.pull_request.number  }}"
           path: pprof_html
