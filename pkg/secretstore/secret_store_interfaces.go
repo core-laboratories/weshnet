@@ -3,8 +3,8 @@ package secretstore
 import (
 	"context"
 
+	"github.com/ipfs/boxo/keystore"
 	"github.com/ipfs/go-cid"
-	keystore "github.com/ipfs/go-ipfs-keystore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"go.uber.org/zap"
 

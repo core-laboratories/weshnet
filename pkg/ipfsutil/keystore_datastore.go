@@ -3,8 +3,8 @@ package ipfsutil
 import (
 	"context"
 
+	"github.com/ipfs/boxo/keystore"
 	datastore "github.com/ipfs/go-datastore"
-	keystore "github.com/ipfs/go-ipfs-keystore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 
 	"github.com/core-laboratories/weshnet/v2/pkg/errcode"

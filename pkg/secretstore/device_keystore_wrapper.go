@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/aead/ecdh"
-	keystore "github.com/ipfs/go-ipfs-keystore"
+	"github.com/ipfs/boxo/keystore"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"go.uber.org/zap"
 

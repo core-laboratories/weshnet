@@ -10,7 +10,7 @@ linters:
     - errcheck
     - gochecknoinits
     - gocritic
-    - gomodguard
+    - gomodguard_v2
     - gosec
     - govet
     - ineffassign
@@ -60,6 +60,7 @@ formatters:
       sections:
         - standard
         - default
+        - prefix(github.com/core-laboratories/weshnet/v2)
   exclusions:
     generated: lax
     paths:
