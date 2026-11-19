@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
-	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
 	"github.com/core-laboratories/weshnet/v2/pkg/tinder"
+	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 const testProtocolID = "/wesh/handshake_test/1.0.0"

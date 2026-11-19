@@ -17,6 +17,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	protocol "github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
+	protoio "github.com/libp2p/go-msgio/pbio"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
 	"go.uber.org/zap"
@@ -25,7 +26,6 @@ import (
 	ble "github.com/core-laboratories/weshnet/v2/pkg/ble-driver"
 	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 	mc "github.com/core-laboratories/weshnet/v2/pkg/multipeer-connectivity-driver"
-	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
 )
 
 const (
