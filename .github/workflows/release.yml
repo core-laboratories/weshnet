@@ -1,52 +1,18 @@
 name: Release
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      # Go
-      - "**"
-      - "!**.md"
-      - ".goreleaser"
-      - "go.*"
-      - "**.go"
-      # CI
-      - ".github/workflows/release.yml"
+  release:
+    types: [published]
 
 jobs:
-  semantic-release:
-    name: Semantic release
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    outputs:
-      new-release-published: ${{ steps.semantic.outputs.new_release_published }}
-      release-version: ${{ steps.semantic.outputs.new_release_version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Run Semantic Release
-        id: semantic
-        uses: cycjimmy/semantic-release-action@d9bf53a078bd2f86aaffaec796dbb3d28f1b6f34 # v8.1.3
-        with:
-          branches: |
-            ['main']
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  post-semantic-release:
-    needs: semantic-release
-    if: needs.semantic-release.outputs.new-release-published == 'true'
+  index-go-module:
+    name: Index published Go release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -60,10 +26,10 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
 
-      - name: Register version on pkg.go.dev
+      - name: Request release from Go module proxy
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          package=$(cat go.mod | grep ^module | awk '{print $2}')
-          version=v${{ needs.semantic-release.outputs.release-version }}
-          url=https://proxy.golang.org/${package}/@v/${version}.info
-          set -x +e
-          curl -i $url
+          package=$(go list -m)
+          curl --fail --show-error --silent --retry 5 --retry-delay 3 --retry-all-errors \
+            "https://proxy.golang.org/${package}/@v/${RELEASE_TAG}.info"
