@@ -1,0 +1,11 @@
+package weshdirectory
+
+import (
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/directorytypes"
+)
+
+type Datastore interface {
+	Get(identifier string) (*directorytypes.Record, error)
+	Put(record *directorytypes.Record) error
+	Del(identifier string) error
+}

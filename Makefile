@@ -12,7 +12,7 @@ CI ?= false
 
 BUILD_DATE ?= `date +%s`
 VCS_REF ?= `git rev-parse --short HEAD`
-VERSION ?= `go run github.com/mdomke/git-semver/v5`
+VERSION ?= `cat VERSION`
 LDFLAGS ?= -ldflags="-X github.com/core-laboratories/weshnet/v2/internal/weshversion.VcsRef=$(VCS_REF) -X github.com/core-laboratories/weshnet/v2/internal/weshversion.Version=$(VERSION)"
 
 # @FIXME(gfanton): on macOS Monterey (12.0.x) we currently need to set the
@@ -135,8 +135,8 @@ validate-go-version:
 ##
 
 
-protos_src := $(wildcard ../api/*.proto) $(wildcard ../api/go-internal/*.proto)
-gen_src := $(protos_src) Makefile
+protos_src := $(shell find api -name '*.proto' -type f)
+gen_src := $(protos_src) Makefile buf.gen.yaml buf.gen.tag.yaml
 gen_sum := gen.sum
 protoc_opts := -I ../api:`go list -m -mod=mod -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis:`go list -m -mod=mod -f {{.Dir}} github.com/gogo/protobuf`:/protobuf
 pb.generate: gen.sum validate-go-version

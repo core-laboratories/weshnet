@@ -1,0 +1,147 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/oklog/run"
+	ff "github.com/peterbourgon/ff/v3"
+	"github.com/peterbourgon/ff/v3/ffcli"
+
+	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/initutil"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
+)
+
+var manager *initutil.Manager
+
+func main() {
+	err := runMain(os.Args[1:])
+	switch {
+	case err == nil:
+		// noop
+	case err == flag.ErrHelp || strings.Contains(err.Error(), flag.ErrHelp.Error()):
+		os.Exit(2)
+	default:
+		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runMain(args []string) error {
+	ctx, ctxCancel := context.WithCancel(context.Background())
+	defer ctxCancel()
+
+	// init manager
+	{
+		var err error
+		manager, err = initutil.New(nil)
+		if err != nil {
+			return errcode.ErrCode_TODO.Wrap(err)
+		}
+		defer manager.Close(nil)
+	}
+
+	guiCmd, guiInit := guiCommand()
+
+	// root command
+	var root *ffcli.Command
+	{
+		fs := flag.NewFlagSet("wesh", flag.ContinueOnError)
+		manager.SetupLoggingFlags(fs)
+
+		root = &ffcli.Command{
+			ShortUsage: "wesh [global flags] <subcommand> [flags] [args...]",
+			FlagSet:    fs,
+			Options: []ff.Option{
+				ff.WithEnvVarPrefix("WESH"),
+			},
+			Exec:      func(context.Context, []string) error { return flag.ErrHelp },
+			UsageFunc: usageFunc,
+			Subcommands: []*ffcli.Command{
+				daemonCommand(),
+				accountDaemonCommand(),
+				miniCommand(),
+				versionCommand(),
+				systemInfoCommand(),
+				groupinitCommand(),
+				shareInviteCommand(),
+				tokenServerCommand(),
+				replicationServerCommand(),
+				peersCommand(),
+				exportCommand(),
+				remoteLogsCommand(),
+				serviceKeyCommand(),
+				pushServerCommand(),
+				p2pCommand(),
+				relayServerCommand(),
+				vcIssuerCommand(),
+				directoryServiceCommand(),
+			},
+		}
+
+		if guiCmd != nil {
+			root.Subcommands = append(root.Subcommands, guiCmd)
+		}
+	}
+
+	run := func() error {
+		// create run.Group
+		var process run.Group
+		{
+			// handle close signal
+			execute, interrupt := run.SignalHandler(ctx, os.Interrupt)
+			process.Add(execute, interrupt)
+
+			// add root command to process
+			process.Add(func() error {
+				return root.ParseAndRun(ctx, args)
+			}, func(error) {
+				fmt.Println("interrupted, closing...")
+				ctxCancel()
+			})
+		}
+
+		// start the run.Group process
+		{
+			err := process.Run()
+			if err == context.Canceled {
+				return nil
+			}
+			return err
+		}
+	}
+
+	if guiInit != nil && len(args) > 0 && args[0] == "gui" { // can't check subcommand after Parse
+		ech := make(chan error)
+		defer close(ech)
+
+		go func() {
+			ech <- run()
+		}()
+		if err := guiInit(); err != nil {
+			return err
+		}
+		return <-ech
+	}
+
+	return run()
+}
+
+func usageFunc(c *ffcli.Command) string {
+	advanced := manager.AdvancedHelp()
+	if advanced == "" {
+		return ffcli.DefaultUsageFunc(c)
+	}
+	return ffcli.DefaultUsageFunc(c) + "\n\n" + advanced
+}
+
+func ffSubcommandOptions() []ff.Option {
+	return []ff.Option{
+		ff.WithEnvVarPrefix("WESH"),
+		ff.WithConfigFileFlag("config"),
+		ff.WithConfigFileParser(ff.PlainParser),
+	}
+}

@@ -1,0 +1,42 @@
+package weshmessenger
+
+import (
+	"archive/tar"
+	"io"
+
+	"google.golang.org/protobuf/proto"
+
+	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/messengerdb"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
+)
+
+const exportLocalDBState = "messenger/local_db_state"
+
+func exportMessengerData(writer io.Writer, db *messengerdb.DBWrapper) error {
+	tw := tar.NewWriter(writer)
+
+	dbState := db.KeepDatabaseLocalState()
+	dbStateBytes, err := proto.Marshal(dbState)
+	if err != nil {
+		return errcode.ErrCode_ErrSerialization.Wrap(err)
+	}
+
+	if err := tw.WriteHeader(&tar.Header{
+		Typeflag: tar.TypeReg,
+		Name:     exportLocalDBState,
+		Size:     int64(len(dbStateBytes)),
+		Mode:     0o600,
+	}); err != nil {
+		return errcode.ErrCode_ErrStreamWrite.Wrap(err)
+	}
+
+	if _, err := tw.Write(dbStateBytes); err != nil {
+		return errcode.ErrCode_ErrStreamWrite.Wrap(err)
+	}
+
+	if err := tw.Close(); err != nil {
+		return errcode.ErrCode_ErrStreamWrite.Wrap(err)
+	}
+
+	return nil
+}

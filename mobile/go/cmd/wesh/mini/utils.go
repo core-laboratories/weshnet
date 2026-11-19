@@ -1,0 +1,37 @@
+package mini
+
+import (
+	"encoding/base64"
+	"fmt"
+
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshlinks"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
+	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
+)
+
+func openGroupFromString(url string) (*protocoltypes.Group, error) {
+	link, err := weshlinks.UnmarshalLink(url, nil) // FIXME: support passing an optional passphrase to decrypt the link
+	if err != nil {
+		return nil, errcode.ErrCode_ErrInvalidInput.Wrap(err)
+	}
+	if !link.IsGroup() {
+		return nil, errcode.ErrCode_ErrInvalidInput.Wrap(fmt.Errorf("expected a group URL, got %q instead", link.GetKind()))
+	}
+	return link.GetWeshGroup().GetGroup(), nil
+}
+
+func pkAsShortID(pk []byte) string {
+	if len(pk) > 24 {
+		return base64.StdEncoding.EncodeToString(pk)[0:8]
+	}
+
+	return "--------"
+}
+
+func shortStringID(pk string) string {
+	if len(pk) > 8 {
+		return pk[0:8]
+	}
+
+	return pk
+}
