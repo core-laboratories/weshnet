@@ -15,6 +15,7 @@ import (
 	"github.com/libp2p/go-libp2p/core/network"
 	peer "github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/p2p/host/eventbus"
+	protoio "github.com/libp2p/go-msgio/pbio"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
@@ -24,7 +25,6 @@ import (
 	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
-	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 const contactRequestV1 = "/wesh/contact_req/1.0.0"

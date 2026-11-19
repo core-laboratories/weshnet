@@ -5,12 +5,12 @@ import (
 	"encoding/base64"
 
 	p2pcrypto "github.com/libp2p/go-libp2p/core/crypto"
+	protoio "github.com/libp2p/go-msgio/pbio"
 	"golang.org/x/crypto/nacl/box"
 
 	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
-	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 // Constant nonces

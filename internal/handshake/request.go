@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	p2pcrypto "github.com/libp2p/go-libp2p/core/crypto"
+	protoio "github.com/libp2p/go-msgio/pbio"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/nacl/box"
 	"google.golang.org/protobuf/proto"
@@ -12,7 +13,6 @@ import (
 	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
-	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 // RequestUsingReaderWriter init a handshake with the responder, using provided io reader and writer
