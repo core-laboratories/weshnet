@@ -1,0 +1,158 @@
+package ipfsutil
+
+import (
+	"context"
+	"sync"
+
+	coreiface "github.com/ipfs/kubo/core/coreiface"
+	coreiface_options "github.com/ipfs/kubo/core/coreiface/options"
+	p2p_pubsub "github.com/libp2p/go-libp2p-pubsub"
+	p2p_peer "github.com/libp2p/go-libp2p/core/peer"
+	"go.uber.org/zap"
+
+	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
+)
+
+type PubSubAPI struct {
+	*p2p_pubsub.PubSub
+	logger *zap.Logger
+
+	muTopics sync.RWMutex
+	topics   map[string]*p2p_pubsub.Topic
+}
+
+func NewPubSubAPI(_ context.Context, logger *zap.Logger, ps *p2p_pubsub.PubSub) coreiface.PubSubAPI {
+	return &PubSubAPI{
+		PubSub: ps,
+
+		logger: logger,
+		topics: make(map[string]*p2p_pubsub.Topic),
+	}
+}
+
+func (ps *PubSubAPI) topicJoin(topic string, opts ...p2p_pubsub.TopicOpt) (*p2p_pubsub.Topic, error) {
+	ps.muTopics.Lock()
+	defer ps.muTopics.Unlock()
+
+	var err error
+
+	t, ok := ps.topics[topic]
+	if ok {
+		return t, nil
+	}
+
+	if t, err = ps.Join(topic, opts...); err != nil {
+		return nil, err
+	}
+
+	if _, err = t.Relay(); err != nil {
+		t.Close()
+		return nil, err
+	}
+
+	ps.topics[topic] = t
+	return t, nil
+}
+
+// func (ps *PubSubAPI) topicLeave(topic string) (err error) {
+// 	ps.muTopics.Lock()
+// 	if t, ok := ps.topics[topic]; ok {
+// 		err = t.Close()
+// 		delete(ps.topics, topic)
+// 	}
+// 	ps.muTopics.Unlock()
+// 	return
+// }
+
+// Ls lists subscribed topics by name
+func (ps *PubSubAPI) Ls(context.Context) ([]string, error) {
+	return ps.GetTopics(), nil
+}
+
+// Peers list peers we are currently pubsubbing with
+func (ps *PubSubAPI) Peers(_ context.Context, opts ...coreiface_options.PubSubPeersOption) ([]p2p_peer.ID, error) {
+	s, err := coreiface_options.PubSubPeersOptions(opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return ps.ListPeers(s.Topic), nil
+}
+
+var minTopicSize = p2p_pubsub.WithReadiness(p2p_pubsub.MinTopicSize(1))
+
+// Publish a message to a given pubsub topic
+func (ps *PubSubAPI) Publish(ctx context.Context, topic string, msg []byte) error {
+	t, err := ps.topicJoin(topic)
+	if err != nil {
+		return err
+	}
+
+	return t.Publish(ctx, msg, minTopicSize)
+}
+
+// Subscribe to messages on a given topic
+func (ps *PubSubAPI) Subscribe(_ context.Context, topic string, _ ...coreiface_options.PubSubSubscribeOption) (coreiface.PubSubSubscription, error) {
+	t, err := ps.topicJoin(topic)
+	if err != nil {
+		return nil, err
+	}
+
+	ps.logger.Debug("subscribing", logutil.PrivateString("topic", topic))
+	sub, err := t.Subscribe()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pubsubSubscriptionAPI{ps.logger, sub}, nil
+}
+
+// PubSubSubscription is an active PubSub subscription
+type pubsubSubscriptionAPI struct {
+	logger *zap.Logger
+	*p2p_pubsub.Subscription
+}
+
+// io.Closer
+func (pss *pubsubSubscriptionAPI) Close() (_ error) {
+	pss.Cancel()
+	return
+}
+
+// Next return the next incoming message
+func (pss *pubsubSubscriptionAPI) Next(ctx context.Context) (coreiface.PubSubMessage, error) {
+	m, err := pss.Subscription.Next(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pubsubMessageAPI{m}, nil
+}
+
+// PubSubMessage is a single PubSub message
+type pubsubMessageAPI struct {
+	*p2p_pubsub.Message
+}
+
+// From returns id of a peer from which the message has arrived
+func (psm *pubsubMessageAPI) From() p2p_peer.ID {
+	return psm.GetFrom()
+}
+
+// Data returns the message body
+func (psm *pubsubMessageAPI) Data() []byte {
+	return psm.GetData()
+}
+
+// Seq returns message identifier
+func (psm *pubsubMessageAPI) Seq() []byte {
+	return psm.GetSeqno()
+}
+
+// // Topics returns list of topics this message was set to
+func (psm *pubsubMessageAPI) Topics() []string {
+	if psm.Topic == nil {
+		return nil
+	}
+	return []string{*psm.Topic}
+}

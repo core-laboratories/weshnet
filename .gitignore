@@ -18,10 +18,6 @@ gin-bin
 out/
 profile.out
 vendor/
-/pkg/
-/mobile/go/pkg/*
-!/mobile/go/pkg/wesh*/
-!/mobile/go/pkg/pushtypes/
 /orbitdb/
 debug.log
 
