@@ -46,6 +46,7 @@ type VerificationCodeSender interface {
 
 type VCIssuer struct {
 	serverRootURL       string
+	allowedRedirectURIs map[string]struct{}
 	issuerID            string
 	issuerSignKey       ed25519.PrivateKey
 	issuerPriv          *[32]byte
@@ -62,11 +63,12 @@ type FlowConfig struct {
 }
 
 type Config struct {
-	ServerRootURL string
-	IssuerID      string
-	IssuerSignKey *[32]byte
-	Flow          *FlowConfig
-	Logger        *zap.Logger
+	ServerRootURL       string
+	AllowedRedirectURIs []string
+	IssuerID            string
+	IssuerSignKey       *[32]byte
+	Flow                *FlowConfig
+	Logger              *zap.Logger
 }
 
 func New(config *Config) (*VCIssuer, error) {
@@ -123,14 +125,26 @@ func New(config *Config) (*VCIssuer, error) {
 		}
 	}
 
+	if err := validateIssuerRootURL(config.ServerRootURL); err != nil {
+		return nil, err
+	}
+
 	issuer := &VCIssuer{
-		serverRootURL: config.ServerRootURL,
-		issuerID:      config.IssuerID,
-		issuerSignKey: ed25519PrivKey,
-		issuerPriv:    config.IssuerSignKey,
-		issuerPub:     issuerPub,
-		flow:          config.Flow,
-		logger:        config.Logger,
+		serverRootURL:       config.ServerRootURL,
+		allowedRedirectURIs: map[string]struct{}{weshnet_vc.DefaultRedirectURI: {}},
+		issuerID:            config.IssuerID,
+		issuerSignKey:       ed25519PrivKey,
+		issuerPriv:          config.IssuerSignKey,
+		issuerPub:           issuerPub,
+		flow:                config.Flow,
+		logger:              config.Logger,
+	}
+
+	for _, redirectURI := range config.AllowedRedirectURIs {
+		if err := validateRedirectURI(redirectURI); err != nil {
+			return nil, err
+		}
+		issuer.allowedRedirectURIs[redirectURI] = struct{}{}
 	}
 
 	if err := issuer.initContextStore(); err != nil {
@@ -184,6 +198,10 @@ func (i *VCIssuer) challenge(w http.ResponseWriter, r *http.Request) {
 	redirectURI := r.URL.Query().Get(weshnet_vc.ParamRedirectURI)
 	if len(redirectURI) == 0 {
 		i.error(ErrFlowRedirectURIMissing, w, r)
+		return
+	}
+	if _, allowed := i.allowedRedirectURIs[redirectURI]; !allowed {
+		i.error(ErrFlowRedirectURINotAllowed, w, r)
 		return
 	}
 
@@ -289,6 +307,10 @@ func (i *VCIssuer) checkAuthenticateChallenge(w http.ResponseWriter, r *http.Req
 	challenge, challengeBytes, err := i.checkAndGetChallenge(challengeStr)
 	if err != nil {
 		i.error(err, w, r)
+		return
+	}
+	if _, allowed := i.allowedRedirectURIs[challenge.RedirectUri]; !allowed {
+		i.error(ErrFlowRedirectURINotAllowed, w, r)
 		return
 	}
 
@@ -448,6 +470,10 @@ func (i *VCIssuer) proof(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, allowed := i.allowedRedirectURIs[state.RedirectUri]; !allowed {
+		i.error(ErrFlowRedirectURINotAllowed, w, r)
+		return
+	}
 	if len(state.Code) == 0 {
 		http.Redirect(w, r, makeAuthenticateURL(i.serverRootURL, stateStr), http.StatusFound)
 		return

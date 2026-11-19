@@ -11,12 +11,13 @@ var (
 	ErrNewConfigFlowCodeGeneratorMissing = fmt.Errorf("code generator is missing")
 	ErrNewConfigFlowCodeSenderMissing    = fmt.Errorf("code emitter endpoint is required")
 
-	ErrFlowStateMissing       = fmt.Errorf("a state is required")
-	ErrFlowRedirectURIMissing = fmt.Errorf("a redirect_uri is required")
-	ErrChallengeAuthenticity  = fmt.Errorf("unable to certify challenge")
-	ErrChallengeVerify        = fmt.Errorf("unable to verify challenge")
-	ErrChallengeExpired       = fmt.Errorf("expired challenge")
-	ErrChallengeFailed        = fmt.Errorf("unable to verify challenge signature")
+	ErrFlowStateMissing          = fmt.Errorf("a state is required")
+	ErrFlowRedirectURIMissing    = fmt.Errorf("a redirect_uri is required")
+	ErrFlowRedirectURINotAllowed = fmt.Errorf("redirect_uri is not allowed")
+	ErrChallengeAuthenticity     = fmt.Errorf("unable to certify challenge")
+	ErrChallengeVerify           = fmt.Errorf("unable to verify challenge")
+	ErrChallengeExpired          = fmt.Errorf("expired challenge")
+	ErrChallengeFailed           = fmt.Errorf("unable to verify challenge signature")
 
 	ErrMsgInvalidIdentifier    = "Invalid identifier"
 	ErrMsgUnableToSendCode     = "Unable to send code"

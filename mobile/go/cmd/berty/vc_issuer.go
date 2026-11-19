@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/oklog/run"
@@ -20,12 +21,14 @@ import (
 func vcIssuerCommand() *ffcli.Command {
 	listenerFlag := ""
 	serverRootURL := ""
+	allowedRedirectURIs := ""
 	vcIssuerPrivKey := ""
 
 	fsBuilder := func() (*flag.FlagSet, error) {
 		fs := flag.NewFlagSet("berty vc-issuer", flag.ExitOnError)
 		fs.StringVar(&listenerFlag, "http.listener", listenerFlag, "http listener")
 		fs.StringVar(&serverRootURL, "http.server-root", serverRootURL, "http server root")
+		fs.StringVar(&allowedRedirectURIs, "http.allowed-redirect-uris", allowedRedirectURIs, "comma-separated allowed callback URLs; tone://vc is always allowed")
 		fs.StringVar(&vcIssuerPrivKey, "vc-sk", vcIssuerPrivKey, "Verifiable Credentials Issuer private key (base64 encoded)")
 		return fs, nil
 	}
@@ -94,6 +97,9 @@ func vcIssuerCommand() *ffcli.Command {
 					}, // TODO
 				},
 				Logger: logger,
+			}
+			if allowedRedirectURIs != "" {
+				vcConfig.AllowedRedirectURIs = strings.Split(allowedRedirectURIs, ",")
 			}
 
 			issuer, err := bertyvcissuer.New(vcConfig)
