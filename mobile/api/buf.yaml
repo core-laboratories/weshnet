@@ -1,0 +1,11 @@
+version: v2
+name: buf.build/berty-technologies/berty
+deps:
+  - buf.build/berty-technologies/weshnet
+  - buf.build/srikrsna/protoc-gen-gotag
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT

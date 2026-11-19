@@ -25,7 +25,7 @@ const (
 
 type ReplicatedGroup struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
-	PublicKey            string                 `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	PublicKey            string                 `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty" gorm:"primaryKey"`
 	SignPub              string                 `protobuf:"bytes,2,opt,name=sign_pub,json=signPub,proto3" json:"sign_pub,omitempty"`
 	LinkKey              string                 `protobuf:"bytes,3,opt,name=link_key,json=linkKey,proto3" json:"link_key,omitempty"`
 	CreatedAt            int64                  `protobuf:"varint,100,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -133,10 +133,10 @@ func (x *ReplicatedGroup) GetMessageLatestHead() string {
 
 type ReplicatedGroupToken struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
-	ReplicatedGroupPublicKey string                 `protobuf:"bytes,1,opt,name=replicated_group_public_key,json=replicatedGroupPublicKey,proto3" json:"replicated_group_public_key,omitempty"`
-	ReplicatedGroup          *ReplicatedGroup       `protobuf:"bytes,2,opt,name=replicated_group,json=replicatedGroup,proto3" json:"replicated_group,omitempty"`
-	TokenIssuer              string                 `protobuf:"bytes,3,opt,name=token_issuer,json=tokenIssuer,proto3" json:"token_issuer,omitempty"`
-	TokenId                  string                 `protobuf:"bytes,4,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	ReplicatedGroupPublicKey string                 `protobuf:"bytes,1,opt,name=replicated_group_public_key,json=replicatedGroupPublicKey,proto3" json:"replicated_group_public_key,omitempty" gorm:"index;primaryKey;autoIncrement:false"`
+	ReplicatedGroup          *ReplicatedGroup       `protobuf:"bytes,2,opt,name=replicated_group,json=replicatedGroup,proto3" json:"replicated_group,omitempty" gorm:"foreignKey:ReplicatedGroupPublicKey;references:PublicKey"`
+	TokenIssuer              string                 `protobuf:"bytes,3,opt,name=token_issuer,json=tokenIssuer,proto3" json:"token_issuer,omitempty" gorm:"primaryKey;autoIncrement:false"`
+	TokenId                  string                 `protobuf:"bytes,4,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" gorm:"primaryKey;autoIncrement:false"`
 	CreatedAt                int64                  `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
@@ -612,10 +612,10 @@ const file_replicationtypes_replication_proto_rawDesc = "" +
 	"\x16metadata_entries_count\x18f \x01(\x03R\x14metadataEntriesCount\x120\n" +
 	"\x14metadata_latest_head\x18g \x01(\tR\x12metadataLatestHead\x122\n" +
 	"\x15message_entries_count\x18h \x01(\x03R\x13messageEntriesCount\x12.\n" +
-	"\x13message_latest_head\x18i \x01(\tR\x11messageLatestHead\"\x90\x03\n" +
+	"\x13message_latest_head\x18i \x01(\tR\x11messageLatestHead\"\xd7\x03\n" +
 	"\x14ReplicatedGroupToken\x12o\n" +
-	"\x1breplicated_group_public_key\x18\x01 \x01(\tB0\x9a\x84\x9e\x03+gorm:\"index;primaryKey;autoIncrement:false\"R\x18replicatedGroupPublicKey\x12R\n" +
-	"\x10replicated_group\x18\x02 \x01(\v2'.weshnet.replication.v1.ReplicatedGroupR\x0freplicatedGroup\x12M\n" +
+	"\x1breplicated_group_public_key\x18\x01 \x01(\tB0\x9a\x84\x9e\x03+gorm:\"index;primaryKey;autoIncrement:false\"R\x18replicatedGroupPublicKey\x12\x98\x01\n" +
+	"\x10replicated_group\x18\x02 \x01(\v2'.weshnet.replication.v1.ReplicatedGroupBD\x9a\x84\x9e\x03?gorm:\"foreignKey:ReplicatedGroupPublicKey;references:PublicKey\"R\x0freplicatedGroup\x12M\n" +
 	"\ftoken_issuer\x18\x03 \x01(\tB*\x9a\x84\x9e\x03%gorm:\"primaryKey;autoIncrement:false\"R\vtokenIssuer\x12E\n" +
 	"\btoken_id\x18\x04 \x01(\tB*\x9a\x84\x9e\x03%gorm:\"primaryKey;autoIncrement:false\"R\atokenId\x12\x1d\n" +
 	"\n" +

@@ -81,6 +81,7 @@ network options required by your deployment.
 | `docs` | Guides, architecture records, and generated API documentation |
 | `infra` | Rendezvous and relay deployment resources |
 | `internal` | Private implementation packages |
+| `mobile` | Mobile and desktop Account/Messenger compatibility runtime |
 | `pkg` | Reusable protocol, transport, discovery, and utility packages |
 | `tool` | Development and benchmarking tools |
 

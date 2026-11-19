@@ -1,0 +1,1156 @@
+syntax = "proto3";
+
+package wesh.messenger.v1;
+
+import "protocoltypes.proto";
+import "pushtypes/bertypushtypes.proto";
+import "tagger/tagger.proto";
+
+option go_package = "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes";
+
+// MessengerService is the top-level API that uses the weshnet.protocol to implement the Berty Messenger specific logic.
+// Today, most of the Berty Messenger logic is implemented directly in the application (see the /js folder of this repo).
+service MessengerService {
+  // InstanceShareableBertyID returns a Berty ID that can be shared as a string, QR code or deep link.
+  rpc InstanceShareableBertyID(InstanceShareableBertyID.Request) returns (InstanceShareableBertyID.Reply);
+
+  // ShareableBertyGroup returns a Berty Group that can be shared as a string, QR code or deep link.
+  rpc ShareableBertyGroup(ShareableBertyGroup.Request) returns (ShareableBertyGroup.Reply);
+
+  // DevShareInstanceBertyID shares your Berty ID on a dev channel.
+  // TODO: remove for public.
+  rpc DevShareInstanceBertyID(DevShareInstanceBertyID.Request) returns (DevShareInstanceBertyID.Reply);
+
+  // DevStreamLogs streams logs from the ring-buffer.
+  rpc DevStreamLogs(DevStreamLogs.Request) returns (stream DevStreamLogs.Reply);
+
+  // ParseDeepLink parses a link in the form of berty://xxx or https://berty.tech/id# and returns a structure
+  // that can be used to display information.
+  // This action is read-only.
+  rpc ParseDeepLink(ParseDeepLink.Request) returns (ParseDeepLink.Reply);
+
+  // SendContactRequest takes the payload received from ParseDeepLink and send a contact request using the weshnet.protocol.
+  rpc SendContactRequest(SendContactRequest.Request) returns (SendContactRequest.Reply);
+
+  // SystemInfo returns runtime information.
+  rpc SystemInfo(SystemInfo.Request) returns (SystemInfo.Reply);
+
+  // Use to test stream.
+  rpc EchoTest(EchoTest.Request) returns (stream EchoTest.Reply);
+
+  // Use to test duplex stream.
+  rpc EchoDuplexTest(stream EchoDuplexTest.Request) returns (stream EchoDuplexTest.Reply);
+
+  rpc ConversationStream(ConversationStream.Request) returns (stream ConversationStream.Reply);
+  rpc EventStream(EventStream.Request) returns (stream EventStream.Reply);
+  rpc ConversationCreate(ConversationCreate.Request) returns (ConversationCreate.Reply);
+  rpc ConversationJoin(ConversationJoin.Request) returns (ConversationJoin.Reply);
+  rpc AccountGet(AccountGet.Request) returns (AccountGet.Reply);
+  rpc AccountUpdate(AccountUpdate.Request) returns (AccountUpdate.Reply);
+  rpc AccountPushConfigure(AccountPushConfigure.Request) returns (AccountPushConfigure.Reply);
+  rpc ContactRequest(ContactRequest.Request) returns (ContactRequest.Reply);
+  rpc ContactAccept(ContactAccept.Request) returns (ContactAccept.Reply);
+  rpc Interact(Interact.Request) returns (Interact.Reply);
+  rpc ConversationOpen(ConversationOpen.Request) returns (ConversationOpen.Reply);
+  rpc ConversationClose(ConversationClose.Request) returns (ConversationClose.Reply);
+  rpc ConversationLoad(ConversationLoad.Request) returns (ConversationLoad.Reply);
+  rpc ConversationMute(ConversationMute.Request) returns (ConversationMute.Reply);
+
+  // ReplicationServiceRegisterGroup Asks a replication service to distribute a group contents
+  rpc ReplicationServiceRegisterGroup(ReplicationServiceRegisterGroup.Request) returns (ReplicationServiceRegisterGroup.Reply);
+
+  // ReplicationSetAutoEnable Sets whether new groups should be replicated automatically or not
+  rpc ReplicationSetAutoEnable(ReplicationSetAutoEnable.Request) returns (ReplicationSetAutoEnable.Reply);
+
+  // BannerQuote returns the quote of the day.
+  rpc BannerQuote(BannerQuote.Request) returns (BannerQuote.Reply);
+
+  // InstanceExportData exports instance data
+  rpc InstanceExportData (InstanceExportData.Request) returns (stream InstanceExportData.Reply);
+
+  // MessageSearch
+  rpc MessageSearch (MessageSearch.Request) returns (MessageSearch.Reply);
+
+  // ListMemberDevices Lists devices for a member
+  rpc ListMemberDevices(ListMemberDevices.Request) returns (stream ListMemberDevices.Reply);
+
+  // TyberHostSearch
+  rpc TyberHostSearch (TyberHostSearch.Request) returns (stream TyberHostSearch.Reply);
+  // TyberHostAttach
+  rpc TyberHostAttach (TyberHostAttach.Request) returns (TyberHostAttach.Reply);
+
+  // DebugAuthServiceSetToken sets the service token directly without using the PKCE OAuth 2 token issuer
+  rpc DebugAuthServiceSetToken(DebugAuthServiceSetToken.Request) returns (DebugAuthServiceSetToken.Reply);
+
+  // ServicesTokenList Retrieves the list of service server tokens
+  rpc ServicesTokenList(ServicesTokenList.Request) returns (stream ServicesTokenList.Reply);
+
+  // AuthServiceInitFlow Initialize an authentication flow
+  rpc AuthServiceInitFlow (AuthServiceInitFlow.Request) returns (AuthServiceInitFlow.Reply);
+
+  // AuthServiceCompleteFlow Completes an authentication flow
+  rpc AuthServiceCompleteFlow (AuthServiceCompleteFlow.Request) returns (AuthServiceCompleteFlow.Reply);
+
+  // PushSetAutoShare Sets whether new groups should receive our push token automatically or not
+  rpc PushSetAutoShare(PushSetAutoShare.Request) returns (PushSetAutoShare.Reply);
+
+  // PushShareTokenForConversation Share a push token for a conversation
+  rpc PushShareTokenForConversation(PushShareTokenForConversation.Request) returns (PushShareTokenForConversation.Reply);
+
+  // PushTokenSharedForConversation
+  rpc PushTokenSharedForConversation(PushTokenSharedForConversation.Request) returns (stream PushTokenSharedForConversation.Reply);
+
+  // PushReceive handles a push payload, decrypts it if possible, adds it to the local store
+  rpc PushReceive(PushReceive.Request) returns (PushReceive.Reply);
+
+  // PushSend sends a push payload to a specified list of group members
+  rpc PushSend(PushSend.Request) returns (PushSend.Reply);
+
+  // PushSetDeviceToken registers a push token for the current device
+  rpc PushSetDeviceToken(PushSetDeviceToken.Request) returns (PushSetDeviceToken.Reply);
+
+  // PushSetServer registers a push server for the current device
+  rpc PushSetServer(PushSetServer.Request) returns (PushSetServer.Reply);
+
+
+  // DirectoryServiceRegister registers a verified credential on a directory service
+  rpc DirectoryServiceRegister(DirectoryServiceRegister.Request) returns (DirectoryServiceRegister.Reply);
+
+  // DirectoryServiceUnregister requests a directory service to remove a verified credential
+  rpc DirectoryServiceUnregister(DirectoryServiceUnregister.Request) returns (DirectoryServiceUnregister.Reply);
+
+  // DirectoryServiceQuery queries a directory service for given identifiers
+  rpc DirectoryServiceQuery(DirectoryServiceQuery.Request) returns (stream DirectoryServiceQuery.Reply);
+}
+
+message PaginatedInteractionsOptions {
+  // amount Number of entries to be returned. Default is 5.
+  int32 amount = 1;
+
+  // ref_cid Reference CID for used for pagination defaulting to oldest/newest depending on sorting. When specified this CID won't be included in the results.
+  string ref_cid = 2;
+
+  // conversation_pk Filter by conversation, otherwise X latest message of each conversation are returned
+  string conversation_pk = 3;
+
+  // oldest_to_newest Default sort of results is latest to oldest message
+  bool oldest_to_newest = 4;
+
+  // exclude_medias Medias are included by default
+  reserved 5; // bool exclude_medias = 5;
+
+  // no_bulk should interactions be via atomic update in the stream
+  bool no_bulk = 6;
+}
+
+message ConversationOpen {
+  message Request {
+    string group_pk = 1;
+  }
+  message Reply {}
+}
+
+message ConversationClose {
+  message Request {
+    string group_pk = 1;
+  }
+  message Reply {}
+}
+
+message ConversationLoad {
+  message Request {
+    PaginatedInteractionsOptions options = 1;
+  }
+  message Reply {}
+}
+
+message ConversationMute {
+  message Request {
+    string group_pk = 1;
+    int64 muted_until = 2;
+    bool unmute = 3;
+    bool mute_forever = 4;
+  }
+  message Reply {}
+}
+
+message EchoTest {
+  message Request {
+    uint64 delay = 1; // in ms
+    string echo = 2;
+    bool trigger_error = 3;
+  }
+  message Reply {
+    string echo = 1;
+  }
+}
+
+message EchoDuplexTest {
+  message Request {
+    string echo = 2;
+    bool trigger_error = 3;
+  }
+  message Reply {
+    string echo = 1;
+  }
+}
+
+message InstanceShareableBertyID {
+  message Request {
+    // reset will regenerate a new link
+    bool reset = 1;
+    string display_name = 2;
+    // optional passphase to encrypt the link
+    bytes passphrase = 3;
+  }
+  message Reply {
+    BertyLink link = 1;
+    string internal_url = 2;
+    string web_url = 3;
+  }
+}
+
+message ShareableBertyGroup {
+  message Request {
+    bytes group_pk = 1;
+    string group_name = 2;
+  }
+  message Reply {
+    BertyLink link = 1;
+    string internal_url = 2;
+    string web_url = 3;
+  }
+}
+
+message DevShareInstanceBertyID {
+  message Request {
+    // reset will regenerate a new link
+    bool reset = 1;
+    string display_name = 2;
+  }
+  message Reply {}
+}
+
+message DevStreamLogs {
+  message Request {}
+  message Reply {
+    string line = 1;
+  }
+}
+
+message ParseDeepLink {
+  message Request {
+    string link = 1;
+    // optional passphase to decrypt the link
+    bytes passphrase = 2;
+  }
+  message Reply {
+    BertyLink link = 1;
+  }
+}
+
+message BertyLink {
+  Kind kind = 1;
+  BertyID berty_id = 2;
+  BertyGroup berty_group = 3;
+  BertyMessageRef berty_message_ref = 5;
+  Encrypted encrypted = 4;
+
+  // Encrypted is a clear structure containing clear and encrypted fields.
+  //
+  // We prefer to use a clear struct with encrypted fields instead of a simple
+  // encrypted struct, to improves chances of having a valid structure even
+  // with an invalid passphase. This will force an attacker to have more resources
+  // to test more false-positive guesses.
+  message Encrypted {
+    // kind is a clear representation of the unencrypted link type.
+    Kind kind = 1;
+    // nonce is a clear field used by scrypt as "salt" to derive the passphrase and
+    // also used by cipher.NewCTR as "iv" to initialize a stream cipher.
+    bytes nonce = 2;
+    // display_name is an optional clear representation of the display name.
+    string display_name = 3;
+    // checksum is an optional field used to check if the decryption was successful.
+    // the length is customizable (SHAKE256). a longer checksum means less conflicts.
+    // having more conflicts may be bad in term of UX, but make it easier for an attacker
+    // to run an offline bruteforce.
+    bytes checksum = 4;
+
+    // contact_v1: all bytes fields are encrypted
+
+    bytes contact_public_rendezvous_seed = 10;
+    bytes contact_account_pk = 11;
+
+    // group_v1: all bytes fields are encrypted
+
+    bytes group_public_key = 20;
+    bytes group_secret = 21;
+    bytes group_secret_sig = 22;
+    weshnet.protocol.v1.GroupType group_type = 23; // clear
+    bytes group_sign_pub = 24;
+    bytes group_link_key_sig = 25;
+  }
+
+  enum Kind {
+    UnknownKind = 0;
+    ContactInviteV1Kind = 1;
+    GroupV1Kind = 2;
+    EncryptedV1Kind = 3;
+    MessageV1Kind = 4;
+  }
+
+  message BertyMessageRef {
+    string account_id = 1;
+    string group_pk = 2;
+    string message_id = 3;
+  }
+}
+
+message SendContactRequest {
+  message Request {
+    BertyID berty_id = 1;
+    bytes metadata = 2;
+    bytes own_metadata = 3;
+  }
+  message Reply {}
+}
+
+message BertyID {
+  bytes public_rendezvous_seed = 1;
+  bytes account_pk = 2;
+  string display_name = 3;
+}
+
+message BertyGroup {
+  weshnet.protocol.v1.Group group = 1;
+  string display_name = 2;
+}
+
+// AppMessage is the app layer format
+message AppMessage {
+  Type type = 1;
+  bytes payload = 2;
+  int64 sent_date = 3 [json_name = "sentDate"];
+  reserved 4; // repeated Media medias = 4;
+  string target_cid = 5;
+
+  enum Type {
+    Undefined = 0;
+    TypeUserMessage = 1;
+    reserved 2; // TypeUserReaction = 2;
+    TypeGroupInvitation = 3;
+    TypeSetGroupInfo = 4;
+    TypeSetUserInfo = 5;
+    TypeAcknowledge = 6;
+    reserved 7; // TypeReplyOptions
+    TypeAccountDirectoryServiceRegistered = 8;
+    TypeAccountDirectoryServiceUnregistered = 9;
+    TypeServiceAddToken = 10;
+    TypeServiceRemoveToken = 11;
+    TypePushSetDeviceToken = 12;
+    TypePushSetServer = 13;
+    TypePushSetMemberToken = 14;
+  }
+  message UserMessage {
+    string body = 1;
+  }
+  message GroupInvitation {
+    string link = 2; // TODO: optimize message size
+  }
+  message SetGroupInfo {
+    string display_name = 1;
+    reserved 2; // string avatar_cid = 2; // TODO: optimize message size
+  }
+  message SetUserInfo {
+    string display_name = 1;
+    reserved 2; // string avatar_cid = 2; // TODO: optimize message size
+  }
+  message Acknowledge {
+  }
+
+  message AccountDirectoryServiceRegistered {
+    string identifier = 1;
+    string identifier_proof_issuer = 2;
+    int64 registration_date = 3;
+    int64 expiration_date = 4;
+    string server_addr = 5;
+    string directory_record_token = 6;
+    string directory_record_unregister_token = 7;
+  }
+
+  message AccountDirectoryServiceUnregistered {
+    string identifier = 1;
+    string identifier_proof_issuer = 2;
+    int64 removal_date = 3;
+    string server_addr = 4;
+    string directory_record_token = 5;
+  }
+
+  message ServiceAddToken {
+    string token = 1;
+    repeated ServiceTokenSupportedService supported_services = 2;
+    string authentication_url = 3 ;
+    int64 expiration = 4;
+  }
+
+  message ServiceRemoveToken {
+    string tokenid = 2;
+  }
+
+  message PushSetDeviceToken {
+    push.v1.PushServiceReceiver device_token = 1;
+  }
+
+  message PushSetServer {
+    PushServer server = 1;
+  }
+
+  message PushSetMemberToken {
+    PushMemberTokenUpdate member_token = 1;
+  }
+}
+
+message SystemInfo {
+  message Request {}
+  message Reply {
+    weshnet.protocol.v1.SystemInfo.Reply protocol = 1;
+    Messenger messenger = 2;
+  }
+
+  message Messenger {
+    weshnet.protocol.v1.SystemInfo.Process process = 1;
+    repeated string warns = 2;
+    bool protocol_in_same_process = 3;
+    DB db = 4;
+  }
+
+  message DB {
+    int64 accounts = 1;
+    int64 contacts = 2;
+    int64 conversations = 3;
+    int64 interactions = 4;
+    int64 members = 5;
+    int64 devices = 6;
+    int64 service_token_supported_service_records = 7;
+    int64 service_tokens = 8;
+    int64 conversation_replication_info = 9;
+    int64 metadata_events = 10;
+    reserved 11; // int64 medias = 11;
+    int64 push_member_token = 12;
+    int64 account_verified_credentials = 13;
+    int64 account_directory_service_record = 14;
+    int64 push_device_token = 15;
+    int64 push_server_record = 16;
+    int64 push_local_device_shared_token = 17;
+    // older, more recent
+  }
+}
+
+message ConversationJoin {
+  message Request {
+    string link = 1;
+    // optional passphase to decrypt the link
+    bytes passphrase = 2;
+  }
+  message Reply {}
+}
+
+message DebugAuthServiceSetToken {
+  message Request {
+    AuthExchangeResponse token = 1;
+    string authentication_url = 2;
+  }
+  message Reply {}
+}
+
+message ServicesTokenList {
+  message Request{}
+  message Reply{
+    ServiceToken service = 2;
+  }
+}
+
+message AuthServiceCompleteFlow {
+  message Request{
+    string callback_url = 1;
+  }
+  message Reply{
+    string token_id = 1;
+  }
+}
+
+message AuthServiceInitFlow {
+  message Request {
+    string auth_url = 1;
+    repeated string services = 3;
+  }
+  message Reply {
+    string url = 1;
+    bool secure_url = 2;
+  }
+}
+
+
+// APP MODEL
+
+// NOTE: public keys should be base64 encoded using golang's URLEncoding.WithPadding(NoPadding) format
+
+message Account {
+  string public_key = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string display_name = 2;
+  string link = 3;
+  repeated ServiceToken service_tokens = 5 [(tagger.tags) = "gorm:\"foreignKey:AccountPk\""];
+  bool replicate_new_groups_automatically = 6 [(tagger.tags) = "gorm:\"default:true\""];
+  reserved 7; // string avatar_cid = 7 [(tagger.tags) = "gorm:\"column:avatar_cid\"", (tagger.tags) = "AvatarCID"];
+  bool auto_share_push_token_flag = 8;
+  PushDeviceToken push_device_token = 9 [(tagger.tags) = "gorm:\"foreignKey:AccountPk\""];
+  repeated PushServerRecord push_server_records = 10 [(tagger.tags) = "gorm:\"foreignKey:AccountPk\""];
+  int64 muted_until = 11;
+  bool hide_in_app_notifications = 12;
+  bool hide_push_previews = 13;
+  repeated AccountVerifiedCredential verified_credentials = 14 [(tagger.tags) = "gorm:\"foreignKey:AccountPk\""];
+  repeated AccountDirectoryServiceRecord directory_service_records = 15 [(tagger.tags) = "gorm:\"foreignKey:AccountPk\""];
+}
+
+message ServiceTokenSupportedService {
+  string type = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string address = 3;
+}
+
+message ServiceTokenSupportedServiceRecord {
+  string token_id = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string type = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string address = 3;
+}
+
+message ServiceToken {
+  string account_pk = 1;
+  string token_id = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string token = 3;
+  repeated ServiceTokenSupportedServiceRecord supported_services = 4 [(tagger.tags) = "gorm:\"foreignKey:TokenId\""];
+  string authentication_url = 5 ;
+  int64 expiration = 6;
+}
+
+message MetadataEvent {
+  string cid = 1 [(tagger.tags) = "gorm:\"primaryKey;column:cid\""];
+  string conversation_public_key = 2 [(tagger.tags) = "gorm:\"index\""];
+  weshnet.protocol.v1.EventType metadata_event_type = 3;
+  bytes payload = 4;
+}
+
+message Interaction {
+  string cid = 1 [(tagger.tags) = "gorm:\"primaryKey;column:cid\""];
+  AppMessage.Type type = 2 [(tagger.tags) = "gorm:\"index\""];
+  string member_public_key = 7;
+  string device_public_key = 12;
+  Member member = 8 [(tagger.tags) = "gorm:\"foreignKey:PublicKey;references:MemberPublicKey\""];
+  string conversation_public_key = 3 [(tagger.tags) = "gorm:\"index\""];
+  Conversation conversation = 4;
+  bytes payload = 5;
+  bool is_mine = 6;
+  int64 sent_date = 9 [(tagger.tags) = "gorm:\"index\""];
+  bool acknowledged = 10;
+  string target_cid = 13 [(tagger.tags) = "gorm:\"index;column:target_cid\""];
+  reserved 15; // repeated Media medias = 15;
+  reserved 16; // repeated ReactionView reactions = 16 [(tagger.tags) = "gorm:\"-\""]; // specific to client model
+  bool out_of_store_message = 17;
+}
+
+message Contact {
+  string public_key = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string conversation_public_key = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+  Conversation conversation = 3 [(tagger.tags) = "gorm:\"foreignKey:ConversationPublicKey;references:PublicKey\""];
+  State state = 4;
+  string display_name = 5;
+  reserved 9; // string avatar_cid = 9  [(tagger.tags) = "gorm:\"column:avatar_cid\"", (tagger.tags) = "AvatarCID"];
+  int64 created_date = 7;
+  // specific to outgoing requests
+  int64 sent_date = 8;
+  repeated Device devices = 6 [(tagger.tags) = "gorm:\"foreignKey:MemberPublicKey;references:PublicKey\""];
+  int64 info_date = 10;
+
+  enum State {
+    Undefined = 0;
+    IncomingRequest = 1;
+    OutgoingRequestEnqueued = 2;
+    OutgoingRequestSent = 3;
+    Accepted = 4;
+  }
+}
+
+message Conversation {
+  enum Type {
+    Undefined = 0;
+    AccountType = 1;
+    ContactType = 2;
+    MultiMemberType = 3;
+  }
+
+  string public_key = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  Type type = 2;
+  bool is_open = 3;
+  string display_name = 4;
+  string link = 5;
+  int32 unread_count = 6;
+  // last_update is used to sort conversations, it should be updated for each "visible" event
+  int64 last_update = 7;
+  // specific to ContactType conversations
+  string contact_public_key = 8;
+  // specific to ContactType conversations
+  Contact contact = 9 [(tagger.tags) = "gorm:\"foreignKey:ConversationPublicKey;references:PublicKey\""];
+  // specific to MultiMemberType conversations
+  repeated Member members = 10;
+  string account_member_public_key = 11;
+  string local_device_public_key = 12;
+  int64 created_date = 13;
+  reserved 14; // string reply_options_cid = 14 [(tagger.tags) = "gorm:\"column:reply_options_cid\"", (tagger.tags) = "ReplyOptionsCID"];
+  reserved 15; // Interaction reply_options = 15;
+  repeated ConversationReplicationInfo replication_info = 16 [(tagger.tags) = "gorm:\"foreignKey:ConversationPublicKey\""];
+  reserved 17; // string avatar_cid = 17 [(tagger.tags) = "gorm:\"column:avatar_cid\"", (tagger.tags) = "AvatarCID"];
+  // info_date is used when SetGroupInfo is called
+  int64 info_date = 18;
+  string local_member_public_key = 19;
+  int64 muted_until = 20;
+  repeated PushLocalDeviceSharedToken push_local_device_shared_tokens = 21 [(tagger.tags) = "gorm:\"foreignKey:ConversationPublicKey\""];
+  repeated PushMemberToken push_member_tokens = 22 [(tagger.tags) = "gorm:\"foreignKey:ConversationPublicKey\""];
+}
+
+message ConversationReplicationInfo {
+  string cid = 1 [(tagger.tags) = "gorm:\"primaryKey;column:cid\""];
+  string conversation_public_key = 2;
+  string member_public_key = 3;
+  string authentication_url = 4;
+  string replication_server = 5;
+}
+
+message Member { // Composite primary key
+  string public_key = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string display_name = 2;
+  reserved 6; // string avatar_cid = 6 [(tagger.tags) = "gorm:\"column:avatar_cid\"", (tagger.tags) = "AvatarCID"];
+  string conversation_public_key = 3 [(tagger.tags) = "gorm:\"primaryKey\""];
+  bool is_me = 9;
+  bool is_creator = 8;
+  int64 info_date = 7;
+  Conversation conversation = 4;
+  repeated Device devices = 5 [(tagger.tags) = "gorm:\"foreignKey:MemberPublicKey;references:PublicKey\""];
+}
+
+message Device {
+  string public_key = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string member_public_key = 2 [(tagger.tags) = "gorm:\"index\""];
+}
+
+message AccountVerifiedCredential {
+  string account_pk = 1;
+  string identifier = 2;
+  int64 registration_date = 3;
+  int64 expiration_date = 4;
+  string issuer = 5;
+}
+
+message AccountDirectoryServiceRecord {
+  string account_pk = 1;
+  string identifier = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+  string identifier_proof_issuer = 3;
+  string server_addr = 4 [(tagger.tags) = "gorm:\"primaryKey\""];
+  int64 registration_date = 5;
+  int64 expiration_date = 6;
+  bool revoked = 7;
+  string directory_record_token = 8;
+  string directory_record_unregister_token = 9;
+}
+
+message PushDeviceToken {
+  // account_pk is the account public key that owns the device token
+  string account_pk = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  // token_type is the type of the token used, it allows us to act as a proxy to the appropriate push server
+  push.v1.PushServiceTokenType token_type = 2;
+
+  // bundle_id is the app identifier
+  string bundle_id = 3;
+
+  // token is the device identifier used
+  bytes token = 4;
+
+  // public_key is the public key which will be used to encrypt the payload
+  bytes public_key = 5;
+}
+
+message PushServerRecord {
+  string account_pk = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+
+  string server_addr = 2 [(tagger.tags) = "gorm:\"primaryKey\""];
+
+  bytes server_key = 3;
+}
+
+message ContactMetadata {
+  string display_name = 1;
+}
+
+message StreamEvent {
+  Type type = 1;
+  bytes payload = 2;
+  // specific to "*Updated" events
+  bool is_new = 3;
+
+  enum Type {
+    Undefined = 0;
+    TypeListEnded = 1;
+    TypeConversationUpdated = 2;
+    TypeConversationDeleted = 3;
+    TypeInteractionUpdated = 4;
+    TypeInteractionDeleted = 5;
+    TypeContactUpdated = 6;
+    TypeAccountUpdated = 7;
+    TypeMemberUpdated = 8;
+    TypeDeviceUpdated = 9;
+    TypeNotified = 10;
+    reserved 11; // TypeMediaUpdated = 11;
+    TypeConversationPartialLoad = 12;
+    TypePeerStatusConnected = 13;
+    TypePeerStatusReconnecting = 14;
+    TypePeerStatusDisconnected = 15;
+    TypePeerStatusGroupAssociated = 16;
+    TypeServiceTokenAdded = 17;
+  }
+  message ConversationUpdated {
+    Conversation conversation = 1;
+  }
+  message ConversationDeleted {
+    string public_key = 1;
+  }
+  message InteractionUpdated {
+    Interaction interaction = 1;
+  }
+  message InteractionDeleted {
+    string cid = 1 ;
+    string conversation_public_key = 2;
+  }
+  message ContactUpdated {
+    Contact contact = 1;
+  }
+  message AccountUpdated {
+    Account account = 1;
+  }
+  message MemberUpdated {
+    Member member = 1;
+  }
+  message DeviceUpdated {
+    Device device = 1;
+  }
+  message ListEnded {}
+  message ConversationPartialLoad {
+    string conversation_pk = 1;
+    repeated Interaction interactions = 2;
+    reserved 3; // repeated Media medias = 3;
+  }
+  message Notified {
+    Type type = 1;
+    string title = 3;
+    string body = 4;
+    bytes payload = 5;
+    enum Type {
+      Unknown = 0;
+      TypeBasic = 1;
+      TypeMessageReceived = 2;
+      TypeContactRequestSent = 3;
+      TypeContactRequestReceived = 4;
+      TypeGroupInvitation = 5;
+    }
+    message Basic {}
+    message MessageReceived {
+      Interaction interaction = 1;
+      Conversation conversation = 2;
+      Contact contact = 3;
+    }
+    message ContactRequestSent {
+      Contact contact = 3;
+    }
+    message ContactRequestReceived {
+      Contact contact = 3;
+    }
+    message GroupInvitation {
+      Conversation conversation = 2;
+      Contact contact = 3;
+    }
+  }
+
+  // status events
+  message PeerStatusConnected {
+    enum Transport {
+      Unknown = 0;
+      LAN = 1;
+      WAN = 2;
+      Proximity = 3;
+    }
+
+    string peer_id = 1;
+    Transport transport = 2;
+  }
+  message PeerStatusReconnecting {
+    string peer_id = 1;
+  }
+  message PeerStatusDisconnected {
+    string peer_id = 1;
+  }
+  message PeerStatusGroupAssociated {
+    string peer_id = 1;
+    string device_pk = 2;
+    string group_pk = 3;
+  }
+  message ServiceTokenAdded {
+    ServiceToken token = 1;
+  }
+}
+
+message ConversationStream {
+  message Request {
+    uint64 count = 1;
+    uint64 page = 2;
+  }
+  message Reply {
+    Conversation conversation = 1;
+  }
+}
+
+message ConversationCreate {
+  message Request {
+    string display_name = 1;
+    repeated string contacts_to_invite = 2; // public keys
+  }
+  message Reply {
+    string public_key = 1;
+  }
+}
+
+message AccountGet {
+  message Request {}
+  message Reply {
+    Account account = 1;
+  }
+}
+
+message EventStream {
+  message Request {
+    int32 shallow_amount = 1;
+  }
+  message Reply {
+    StreamEvent event = 1;
+  }
+}
+
+message AccountUpdate {
+  message Request {
+    string display_name = 1;
+    reserved 2; // string avatar_cid = 2 [(tagger.tags) = "gorm:\"column:avatar_cid\"", (tagger.tags) = "AvatarCID"];
+  }
+  message Reply {}
+}
+
+message AccountPushConfigure {
+  message Request {
+    int64 muted_until = 1;
+    bool unmute = 2;
+    bool mute_forever = 3;
+    bool hide_in_app_notifications = 4;
+    bool hide_push_previews = 5;
+    bool show_in_app_notifications = 6;
+    bool show_push_previews = 7;
+  }
+  message Reply {}
+}
+
+message ContactRequest {
+  message Request {
+    string link = 1;
+    // optional passphase to decrypt the link
+    bytes passphrase = 2;
+  }
+  message Reply {}
+}
+
+message ContactAccept {
+  message Request {
+    string public_key = 1;
+  }
+  message Reply {}
+}
+
+message Interact {
+  message Request {
+    AppMessage.Type type = 1;
+    bytes payload = 2;
+    string conversation_public_key = 3;
+    reserved 4; // repeated string media_cids = 4;
+    string target_cid = 5;
+    bool metadata = 6;
+  }
+  message Reply {
+    string cid = 1;
+  }
+}
+
+message ReplicationServiceRegisterGroup {
+  message Request {
+    string token_id = 1;
+    string conversation_public_key = 2;
+  }
+  message Reply {}
+}
+
+message ReplicationSetAutoEnable {
+  message Request {
+    bool enabled = 1;
+  }
+  message Reply {
+  }
+}
+
+message BannerQuote {
+  message Request {
+    bool random = 1;
+  }
+  message Reply {
+    string quote = 1;
+    string author = 2;
+  }
+}
+
+message InstanceExportData {
+  message Request {}
+  message Reply {
+    bytes exported_data = 1;
+  }
+}
+
+message LocalDatabaseState {
+  string public_key = 1;
+  string display_name = 2;
+  bool replicate_flag = 3;
+  repeated LocalConversationState local_conversations_state = 4;
+  string account_link = 5;
+  bool auto_share_push_token_flag = 6;
+}
+
+message LocalConversationState {
+  string public_key = 1;
+  int32 unread_count = 2;
+  bool is_open = 3;
+  Conversation.Type type = 4;
+}
+
+message MessageSearch {
+  message Request {
+    string query = 1;
+    int64 before_date = 2;
+    int64 after_date = 3;
+    int32 limit = 4;
+    string ref_cid = 5;
+    bool oldest_to_newest = 6;
+  }
+  message Reply {
+    repeated Interaction results = 1;
+  }
+}
+
+message TyberHostSearch {
+  message Request {
+  }
+  message Reply {
+    string hostname = 1;
+    repeated string ipv4 = 2;
+    repeated string ipv6 = 3;
+  }
+}
+
+message TyberHostAttach {
+  message Request {
+    repeated string addresses = 1;
+  }
+  message Reply {
+    string address = 1;
+  }
+}
+
+message PushSetDeviceToken {
+  message Request {
+    push.v1.PushServiceReceiver receiver = 1;
+  }
+  message Reply {}
+}
+
+message PushSetAutoShare {
+  message Request {
+    bool enabled = 1;
+  }
+  message Reply {
+  }
+}
+
+message PushReceivedData {
+  weshnet.protocol.v1.OutOfStoreReceive.Reply protocol_data = 1;
+  Interaction interaction = 2;
+  bool already_received = 3;
+  bool account_muted = 4;
+  bool conversation_muted = 5;
+  bool hide_preview = 6;
+}
+
+message PushReceive {
+  message Request {
+    bytes payload = 1;
+  }
+  message Reply {
+    PushReceivedData data = 1;
+  }
+}
+
+message ListMemberDevices {
+  message Request {
+    string conversation_pk = 1;
+    string member_pk = 2;
+  }
+  message Reply {
+    Device device = 1;
+  }
+}
+
+message PushShareTokenForConversation {
+  message Request {
+    string conversation_pk = 1;
+  }
+  message Reply {}
+}
+
+message PushTokenSharedForConversation {
+  message Request {
+    string conversation_pk = 1;
+  }
+  message Reply {
+    PushMemberToken token = 1;
+  }
+}
+
+message DirectoryServiceRegister {
+  message Request {
+    string identifier = 1;
+    string proof_issuer = 2;
+    string server_addr = 3;
+    int64 expiration_date = 4;
+  }
+  message Reply {
+    string directory_record_token = 1;
+  }
+}
+
+message DirectoryServiceUnregister {
+  message Request {
+    string server_addr = 1;
+    string directory_record_token = 2;
+  }
+  message Reply {}
+}
+
+message DirectoryServiceQuery {
+  message Request {
+    string server_addr = 1;
+    repeated string identifiers = 2;
+  }
+  message Reply {
+    string directory_identifier = 1;
+    int64 expires_at = 2;
+    string account_uri = 3;
+    bytes verified_credential = 4;
+  }
+}
+
+message PushServer {
+  string addr = 1;
+  bytes key = 2;
+}
+
+message PushLocalDeviceSharedToken {
+  string token_id = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+  // group_pk is the public key of the group for whom the token is for
+  string conversation_public_key = 2;
+}
+
+message PushMemberToken {
+  // token_id is the id of the token
+  string token_id = 1 [(tagger.tags) = "gorm:\"primaryKey\""];
+
+  // group_pk is the public key of the group for whom the token is for
+  string conversation_public_key = 2;
+
+  // device_pk is the public key of the device sending the message
+  string device_pk = 3;
+
+  // server_addr is the push server address
+  string server_addr = 4;
+
+  // server_key is the push server public key
+  bytes server_key = 5;
+
+  // token is the sealed token of the device
+  bytes token = 6;
+}
+
+message PushMemberTokenUpdate {
+  // device_pk is the public key of the device sending the message
+  string device_pk = 1;
+
+  // server is the push server to use
+  PushServer server = 2;
+
+  // token is the sealed token of the device
+  bytes token = 3;
+}
+
+message MemberWithDevices {
+  string member_pk = 1;
+  repeated string devices_pks = 2;
+}
+
+message PushSend {
+  message Request {
+    bytes cid = 1;
+    string group_pk = 2;
+    repeated MemberWithDevices group_members = 3;
+  }
+  message Reply {
+    repeated MemberWithDevices group_members = 1;
+  }
+}
+
+message PushShareToken {
+  message Request {
+    string device_pk = 1;
+    string group_pk = 2;
+    PushServer server = 3;
+    push.v1.PushServiceReceiver receiver = 4;
+  }
+  message Reply {}
+}
+
+message PushSetServer {
+  message Request {
+    PushServer server = 1;
+  }
+  message Reply {}
+}
+
+message AuthExchangeResponse {
+  string access_token = 1;
+  string scope = 2;
+  string error = 3;
+  string error_description = 4;
+  map<string, string> services = 5;
+}
+
+message ServicesTokenCode {
+  repeated string services = 1;
+  string code_challenge = 2;
+  string token_id = 3;
+}

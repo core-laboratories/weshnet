@@ -1,1 +1,10 @@
-26c11907b3ebc0f7a8fa858b6637ab243fc2a3f0  Makefile
+f9d467f452fc8a31fedf025fc04dee8211560cec  Makefile
+286d3ed7678d8dbabf55caf2f70cf133bc9f9eb6  api/go-internal/handshake/handshake.proto
+e52e062b0e96f442274af1844974d8e7bf441795  api/go-internal/tinder/records.proto
+a070b8c9d98b698390fff7c789c891c511abcda5  api/protocol/errcode/errcode.proto
+e5d4b24f6cc183f47b22cccb464331f7ca45fdc9  api/protocol/outofstoremessagetypes/outofstoremessage.proto
+63624d14660f10793dacb3362db7f543c1ed8597  api/protocol/protocoltypes.proto
+9fe8674a8f58ed00f670b966c0fb96f9d9915f57  api/protocol/replicationtypes/replication.proto
+36fcf1d18a11fe7f03bac17cea12bea5cfc8d123  api/protocol/verifiablecredstypes/verifiablecredentials.proto
+f13beb01fe6da316c5d91f0b6979194db925b54d  buf.gen.tag.yaml
+67bc11120a3c1dbfe7081e76e8aa190c05b4ff5a  buf.gen.yaml

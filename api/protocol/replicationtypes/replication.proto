@@ -31,7 +31,7 @@ message ReplicatedGroup {
 
 message ReplicatedGroupToken {
   string replicated_group_public_key = 1 [(tagger.tags) = "gorm:\"index;primaryKey;autoIncrement:false\""];
-  ReplicatedGroup replicated_group = 2;
+  ReplicatedGroup replicated_group = 2 [(tagger.tags) = "gorm:\"foreignKey:ReplicatedGroupPublicKey;references:PublicKey\""];
   string token_issuer = 3 [(tagger.tags) = "gorm:\"primaryKey;autoIncrement:false\""];
   string token_id = 4 [(tagger.tags) = "gorm:\"primaryKey;autoIncrement:false\""];
   int64 created_at = 5;
