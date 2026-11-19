@@ -14,10 +14,16 @@ on:
 jobs:
   buf-release:
     runs-on: ubuntu-latest
+    env:
+      BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: bufbuild/buf-action@85aebf73123b5c15fd5528aaecbf9129cddf7fa7 # v1.6.0
         with:
           input: api/protocol
           token: ${{ secrets.BUF_TOKEN }}
-          push: true
+          push: ${{ env.BUF_TOKEN != '' }}
+
+      - name: Explain skipped registry push
+        if: env.BUF_TOKEN == ''
+        run: echo 'Buf schema build ran, but the registry push was skipped because BUF_TOKEN is not configured.' >> "$GITHUB_STEP_SUMMARY"
