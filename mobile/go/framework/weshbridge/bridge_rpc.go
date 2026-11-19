@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
-	bridgepb "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertybridge"
+	bridgepb "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshbridge"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"

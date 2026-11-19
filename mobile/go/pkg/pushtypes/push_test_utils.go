@@ -7,7 +7,7 @@ import (
 
 const (
 	DummyPushServerAddr = "server.test"
-	PushMockBundleID    = "tech.berty.mock"
+	PushMockBundleID    = "tech.wesh.mock"
 )
 
 type PushMockedDispatcher struct {

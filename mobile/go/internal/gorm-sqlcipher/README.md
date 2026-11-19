@@ -1,6 +1,6 @@
-a fork of `github.com/flyingtime/gorm-sqlcipher` that no longer exist
-
 # GORM Sqlite Driver
+
+A fork of `github.com/flyingtime/gorm-sqlcipher`, which is no longer available.
 
 ![CI](https://github.com/go-gorm/sqlite/workflows/CI/badge.svg)
 

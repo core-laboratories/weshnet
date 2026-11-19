@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertymessenger"
-	bertymessengertesting "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertymessenger/testing"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshmessenger"
+	weshmessengertesting "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshmessenger/testing"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes"
 	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
 )
@@ -29,22 +29,22 @@ func BenchmarkScenario(b *testing.B) {
 	logger, cleanup := testutil.Logger(b)
 	defer cleanup()
 	accountsAmount := 3
-	clients, _ := bertymessengertesting.NonMockedTestingInfra(b, accountsAmount)
+	clients, _ := weshmessengertesting.NonMockedTestingInfra(b, accountsAmount)
 
 	// create nodes
-	var creator *bertymessenger.TestingAccount
+	var creator *weshmessenger.TestingAccount
 	{
 
 		require.NotNil(b, clients[0])
-		creator = bertymessenger.NewTestingAccount(ctx, b, clients[0], nil, logger)
+		creator = weshmessenger.NewTestingAccount(ctx, b, clients[0], nil, logger)
 		require.NotNil(b, creator)
 		defer creator.Close()
 		creator.SetName(b, "Creator")
 	}
-	joiners := make([]*bertymessenger.TestingAccount, accountsAmount-1)
+	joiners := make([]*weshmessenger.TestingAccount, accountsAmount-1)
 	{
 		for i := 0; i < accountsAmount-1; i++ {
-			joiners[i] = bertymessenger.NewTestingAccount(ctx, b, clients[i+1], nil, logger)
+			joiners[i] = weshmessenger.NewTestingAccount(ctx, b, clients[i+1], nil, logger)
 			defer joiners[i].Close()
 			joiners[i].SetName(b, "Joiner #"+strconv.Itoa(i))
 		}
@@ -62,7 +62,7 @@ func BenchmarkScenario(b *testing.B) {
 	gpk := createdConv.GetPublicKey()
 	gpkb, err := b64DecodeBytes(gpk)
 	require.NoError(b, err)
-	sbg, err := creator.GetClient().ShareableBertyGroup(ctx, &messengertypes.ShareableBertyGroup_Request{GroupPk: gpkb, GroupName: convName})
+	sbg, err := creator.GetClient().ShareableWeshGroup(ctx, &messengertypes.ShareableWeshGroup_Request{GroupPk: gpkb, GroupName: convName})
 	require.NoError(b, err)
 
 	// joiners join the conversation
@@ -76,7 +76,7 @@ func BenchmarkScenario(b *testing.B) {
 	time.Sleep(2 * time.Second)
 
 	// open streams and drain lists on all nodes
-	accounts := append([]*bertymessenger.TestingAccount{creator}, joiners...)
+	accounts := append([]*weshmessenger.TestingAccount{creator}, joiners...)
 	for _, account := range accounts {
 		account.DrainInitEvents(b)
 		account.Close()

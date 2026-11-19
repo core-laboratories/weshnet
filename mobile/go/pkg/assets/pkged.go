@@ -3,7 +3,7 @@
 //go:build !skippkger
 // +build !skippkger
 
-package berty
+package wesh
 
 import (
 	"github.com/markbates/pkger"

@@ -13,7 +13,7 @@ import (
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcserver"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes"
-	accountsvc "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyaccount"
+	accountsvc "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshaccount"
 )
 
 func main() {

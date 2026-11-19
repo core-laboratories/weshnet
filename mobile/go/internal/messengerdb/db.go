@@ -1744,7 +1744,7 @@ func (d *DBWrapper) SaveAccountVerifiedCredential(ev *protocoltypes.AccountVerif
 
 	acc, err := d.GetAccount()
 	if err != nil {
-		return errcode.ErrCode_ErrBertyAccountDataNotFound.Wrap(err)
+		return errcode.ErrCode_ErrWeshAccountDataNotFound.Wrap(err)
 	}
 
 	if err := d.db.Transaction(func(tx *gorm.DB) error {

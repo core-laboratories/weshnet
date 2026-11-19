@@ -14,14 +14,14 @@ import (
 	"moul.io/u"
 	"moul.io/zapconfig"
 
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertybot"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyversion"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshbot"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshversion"
 )
 
 var (
 	username     = u.CurrentUsername("anon")
-	node1Addr    = flag.String("addr1", "127.0.0.1:9091", "first remote 'berty daemon' address")
-	node2Addr    = flag.String("addr2", "127.0.0.1:9092", "second remote 'berty daemon' address")
+	node1Addr    = flag.String("addr1", "127.0.0.1:9091", "first remote 'wesh daemon' address")
+	node2Addr    = flag.String("addr2", "127.0.0.1:9092", "second remote 'wesh daemon' address")
 	displayName1 = flag.String("name1", username+" (testbot1)", "first bot's display name")
 	displayName2 = flag.String("name2", username+" (testbot2)", "second bot's display name")
 	debug        = flag.Bool("debug", false, "debug mode")
@@ -37,7 +37,7 @@ func main() {
 }
 
 type TestBot struct {
-	Bot1, Bot2 *bertybot.Bot
+	Bot1, Bot2 *weshbot.Bot
 	ctx        context.Context
 	logger     *zap.Logger
 }
@@ -68,8 +68,8 @@ func Main() error {
 	return g.Run()
 }
 
-func (testbot *TestBot) VersionCommand(ctx bertybot.Context) {
-	_ = ctx.ReplyString("version: " + bertyversion.Version)
+func (testbot *TestBot) VersionCommand(ctx weshbot.Context) {
+	_ = ctx.ReplyString("version: " + weshversion.Version)
 	// FIXME: also returns the version of the remote messenger and protocol
 }
 
@@ -78,30 +78,30 @@ func (testbot *TestBot) InitBot1() error {
 	logger := testbot.logger.Named("bot1")
 
 	// init bot
-	opts := []bertybot.NewOption{}
+	opts := []weshbot.NewOption{}
 	opts = append(opts,
-		bertybot.WithLogger(logger.Named("lib")),                                  // configure a logger
-		bertybot.WithDisplayName(*displayName1),                                   // bot name
-		bertybot.WithInsecureMessengerGRPCAddr(*node1Addr),                        // connect to running berty messenger daemon
-		bertybot.WithRecipe(bertybot.AutoAcceptIncomingContactRequestRecipe()),    // accept incoming contact requests
-		bertybot.WithRecipe(bertybot.WelcomeMessageRecipe("welcome to testbot1")), // send welcome message to new contacts and new conversations
-		bertybot.WithRecipe(bertybot.EchoRecipe("you said1: ")),                   // reply to messages with the same message
+		weshbot.WithLogger(logger.Named("lib")),                                  // configure a logger
+		weshbot.WithDisplayName(*displayName1),                                   // bot name
+		weshbot.WithInsecureMessengerGRPCAddr(*node1Addr),                        // connect to running wesh messenger daemon
+		weshbot.WithRecipe(weshbot.AutoAcceptIncomingContactRequestRecipe()),    // accept incoming contact requests
+		weshbot.WithRecipe(weshbot.WelcomeMessageRecipe("welcome to testbot1")), // send welcome message to new contacts and new conversations
+		weshbot.WithRecipe(weshbot.EchoRecipe("you said1: ")),                   // reply to messages with the same message
 		// FIXME: with auto-send `/help` suggestion on welcome
-		bertybot.WithCommand("version", "show version", testbot.VersionCommand),
+		weshbot.WithCommand("version", "show version", testbot.VersionCommand),
 	)
 	if *debug {
-		opts = append(opts, bertybot.WithRecipe(bertybot.DebugEventRecipe(logger.Named("debug")))) // debug events
+		opts = append(opts, weshbot.WithRecipe(weshbot.DebugEventRecipe(logger.Named("debug")))) // debug events
 	}
-	bot, err := bertybot.New(opts...)
+	bot, err := weshbot.New(opts...)
 	if err != nil {
 		return fmt.Errorf("bot initialization failed: %w", err)
 	}
 	// display link and qr code
-	logger.Info("retrieve instance Berty ID",
+	logger.Info("retrieve instance Wesh ID",
 		zap.String("pk", bot.PublicKey()),
-		zap.String("link", bot.BertyIDURL()),
+		zap.String("link", bot.WeshIDURL()),
 	)
-	qrterminal.GenerateHalfBlock(bot.BertyIDURL(), qrterminal.L, os.Stdout)
+	qrterminal.GenerateHalfBlock(bot.WeshIDURL(), qrterminal.L, os.Stdout)
 	testbot.Bot1 = bot
 	return nil
 }
@@ -111,28 +111,28 @@ func (testbot *TestBot) InitBot2() error {
 	logger := testbot.logger.Named("bot2")
 
 	// init bot
-	opts := []bertybot.NewOption{}
+	opts := []weshbot.NewOption{}
 	opts = append(opts,
-		bertybot.WithLogger(logger.Named("lib")),                                  // configure a logger
-		bertybot.WithDisplayName(*displayName2),                                   // bot name
-		bertybot.WithInsecureMessengerGRPCAddr(*node2Addr),                        // connect to running berty messenger daemon
-		bertybot.WithRecipe(bertybot.AutoAcceptIncomingContactRequestRecipe()),    // accept incoming contact requests
-		bertybot.WithRecipe(bertybot.WelcomeMessageRecipe("welcome to testbot2")), // send welcome message to new contacts and new conversations
-		bertybot.WithRecipe(bertybot.EchoRecipe("you said2: ")),                   // reply to messages with the same message
+		weshbot.WithLogger(logger.Named("lib")),                                  // configure a logger
+		weshbot.WithDisplayName(*displayName2),                                   // bot name
+		weshbot.WithInsecureMessengerGRPCAddr(*node2Addr),                        // connect to running wesh messenger daemon
+		weshbot.WithRecipe(weshbot.AutoAcceptIncomingContactRequestRecipe()),    // accept incoming contact requests
+		weshbot.WithRecipe(weshbot.WelcomeMessageRecipe("welcome to testbot2")), // send welcome message to new contacts and new conversations
+		weshbot.WithRecipe(weshbot.EchoRecipe("you said2: ")),                   // reply to messages with the same message
 	)
 	if *debug {
-		opts = append(opts, bertybot.WithRecipe(bertybot.DebugEventRecipe(logger.Named("debug")))) // debug events
+		opts = append(opts, weshbot.WithRecipe(weshbot.DebugEventRecipe(logger.Named("debug")))) // debug events
 	}
-	bot, err := bertybot.New(opts...)
+	bot, err := weshbot.New(opts...)
 	if err != nil {
 		return fmt.Errorf("bot initialization failed: %w", err)
 	}
 	// display link and qr code
-	logger.Info("retrieve instance Berty ID",
+	logger.Info("retrieve instance Wesh ID",
 		zap.String("pk", bot.PublicKey()),
-		zap.String("link", bot.BertyIDURL()),
+		zap.String("link", bot.WeshIDURL()),
 	)
-	qrterminal.GenerateHalfBlock(bot.BertyIDURL(), qrterminal.L, os.Stdout)
+	qrterminal.GenerateHalfBlock(bot.WeshIDURL(), qrterminal.L, os.Stdout)
 	testbot.Bot2 = bot
 	return nil
 }

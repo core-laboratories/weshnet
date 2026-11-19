@@ -7,39 +7,39 @@ import (
 	protocoltypes "github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
-func (link *BertyLink) IsValid() error {
+func (link *WeshLink) IsValid() error {
 	if link == nil {
 		return errcode.ErrCode_ErrMissingInput
 	}
 	switch link.Kind {
-	case BertyLink_ContactInviteV1Kind:
-		if link.BertyId == nil ||
-			link.BertyId.AccountPk == nil ||
-			link.BertyId.PublicRendezvousSeed == nil {
+	case WeshLink_ContactInviteV1Kind:
+		if link.WeshId == nil ||
+			link.WeshId.AccountPk == nil ||
+			link.WeshId.PublicRendezvousSeed == nil {
 			return errcode.ErrCode_ErrMissingInput
 		}
 		return nil
 
-	case BertyLink_GroupV1Kind:
-		if link.BertyGroup == nil {
+	case WeshLink_GroupV1Kind:
+		if link.WeshGroup == nil {
 			return errcode.ErrCode_ErrMissingInput
 		}
-		if groupType := link.BertyGroup.Group.GroupType; groupType != protocoltypes.GroupType_GroupTypeMultiMember {
+		if groupType := link.WeshGroup.Group.GroupType; groupType != protocoltypes.GroupType_GroupTypeMultiMember {
 			return errcode.ErrCode_ErrInvalidInput.Wrap(fmt.Errorf("can't share a %q group type", groupType))
 		}
 		return nil
 
-	case BertyLink_EncryptedV1Kind:
+	case WeshLink_EncryptedV1Kind:
 		if link.Encrypted == nil {
 			return errcode.ErrCode_ErrMissingInput
 		}
 		switch link.Encrypted.Kind {
-		case BertyLink_ContactInviteV1Kind:
+		case WeshLink_ContactInviteV1Kind:
 			if link.Encrypted.ContactAccountPk == nil ||
 				link.Encrypted.ContactPublicRendezvousSeed == nil {
 				return errcode.ErrCode_ErrMissingInput
 			}
-		case BertyLink_GroupV1Kind:
+		case WeshLink_GroupV1Kind:
 			if groupType := link.Encrypted.GroupType; groupType != protocoltypes.GroupType_GroupTypeMultiMember {
 				return errcode.ErrCode_ErrInvalidInput.Wrap(fmt.Errorf("can't share a %q group type", groupType))
 			}
@@ -47,8 +47,8 @@ func (link *BertyLink) IsValid() error {
 			return errcode.ErrCode_ErrInvalidInput
 		}
 		return nil
-	case BertyLink_MessageV1Kind:
-		if link.BertyMessageRef == nil {
+	case WeshLink_MessageV1Kind:
+		if link.WeshMessageRef == nil {
 			return errcode.ErrCode_ErrMissingInput
 		}
 		return nil
@@ -57,26 +57,26 @@ func (link *BertyLink) IsValid() error {
 	return errcode.ErrCode_ErrInvalidInput
 }
 
-func (link *BertyLink) IsContact() bool {
-	return link.Kind == BertyLink_ContactInviteV1Kind &&
+func (link *WeshLink) IsContact() bool {
+	return link.Kind == WeshLink_ContactInviteV1Kind &&
 		link.IsValid() == nil
 }
 
-func (link *BertyLink) IsGroup() bool {
-	return link.Kind == BertyLink_GroupV1Kind &&
+func (link *WeshLink) IsGroup() bool {
+	return link.Kind == WeshLink_GroupV1Kind &&
 		link.IsValid() == nil
 }
 
-func (id *BertyID) GetBertyLink() *BertyLink {
-	return &BertyLink{
-		Kind:    BertyLink_ContactInviteV1Kind,
-		BertyId: id,
+func (id *WeshID) GetWeshLink() *WeshLink {
+	return &WeshLink{
+		Kind:    WeshLink_ContactInviteV1Kind,
+		WeshId: id,
 	}
 }
 
-func (group *BertyGroup) GetBertyLink() *BertyLink {
-	return &BertyLink{
-		Kind:       BertyLink_GroupV1Kind,
-		BertyGroup: group,
+func (group *WeshGroup) GetWeshLink() *WeshLink {
+	return &WeshLink{
+		Kind:       WeshLink_GroupV1Kind,
+		WeshGroup: group,
 	}
 }

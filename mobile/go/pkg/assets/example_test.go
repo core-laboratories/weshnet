@@ -1,1 +1,1 @@
-package berty_test
+package wesh_test

@@ -12,8 +12,6 @@ import (
 	// build tool
 	_ "github.com/buicongtan1997/protoc-gen-swagger-config"
 	// required by Makefile
-	_ "github.com/campoy/embedmd"
-	// required by Makefile
 	_ "github.com/daixiang0/gci"
 	// required for dev
 	_ "github.com/githubnemo/CompileDaemon"

@@ -13,7 +13,7 @@ CI ?= false
 BUILD_DATE ?= `date +%s`
 VCS_REF ?= `git rev-parse --short HEAD`
 VERSION ?= `cat ../../VERSION`
-LDFLAGS ?= -ldflags="-checklinkname=0 -X github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyversion.VcsRef=$(VCS_REF) -X github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyversion.Version=$(VERSION)"
+LDFLAGS ?= -ldflags="-checklinkname=0 -X github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshversion.VcsRef=$(VCS_REF) -X github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshversion.Version=$(VERSION)"
 
 # @FIXME(gfanton): on macOS Monterey (12.0.x) we currently need to set the
 # environment variable `MallocNanoZone` to 0 to avoid a SIGABRT or SIGSEGV
@@ -67,7 +67,7 @@ clean:
 
 
 mini.dev: generate
-	go run github.com/githubnemo/CompileDaemon --color=true --build="go install -v" --build-dir="./cmd/berty" --command="berty mini"
+	go run github.com/githubnemo/CompileDaemon --color=true --build="go install -v" --build-dir="./cmd/wesh" --command="wesh mini"
 .PHONY: mini.dev
 
 
@@ -110,15 +110,15 @@ go.unittest: pb.generate
 
 
 go.flappy-tests: pb.generate
-	TEST_STABILITY=flappy go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy    ./pkg/bertymessenger
-	TEST_STABILITY=flappy go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy    ./pkg/bertybot
-	TEST_STABILITY=flappy TEST_SPEED=any GOFLAGS="-tags=fts5,sqlite,sqlite_unlock_notify" go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy ./pkg/bertyreplication
+	TEST_STABILITY=flappy go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy    ./pkg/weshmessenger
+	TEST_STABILITY=flappy go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy    ./pkg/weshbot
+	TEST_STABILITY=flappy TEST_SPEED=any GOFLAGS="-tags=fts5,sqlite,sqlite_unlock_notify" go run moul.io/testman test -v -test.v -timeout=600s -retry=10 -run ^TestFlappy ./pkg/weshreplication
 	# FIXME: run on other packages too
 .PHONY: go.flappy-tests
 
 
 go.broken-tests: pb.generate
-	TEST_STABILITY=broken go run moul.io/testman test -continue-on-error -timeout=1200s -test.timeout=60s -retry=5 -run ^TestBroken ./pkg/bertymessenger
+	TEST_STABILITY=broken go run moul.io/testman test -continue-on-error -timeout=1200s -test.timeout=60s -retry=5 -run ^TestBroken ./pkg/weshmessenger
 .PHONY: go.broken-tests
 
 
@@ -131,15 +131,15 @@ go.install: pb.generate
 
 docker.build: pb.generate
 	$(call check-program, docker)
-	docker build -t bertytech/berty --platform=linux/amd64 ..
+	docker build -t weshtech/wesh --platform=linux/amd64 ..
 .PHONY: docker.build
 
 
 docker.fast: pb.generate
 	$(call check-program, $(GO) docker)
 	@mkdir -p out
-	GOOS=linux GOARCH=amd64 GO111MODULE=on $(GO) build $(GO_TAGS) -v -o ./out/berty-linux-static ./cmd/berty
-	docker run -it --rm -v $(PWD)/out/berty-linux-static:/bin/berty $(RUN_OPTS) ubuntu berty $(ARGS)
+	GOOS=linux GOARCH=amd64 GO111MODULE=on $(GO) build $(GO_TAGS) -v -o ./out/wesh-linux-static ./cmd/wesh
+	docker run -it --rm -v $(PWD)/out/wesh-linux-static:/bin/wesh $(RUN_OPTS) ubuntu wesh $(ARGS)
 .PHONY: docker.fast
 
 
@@ -166,28 +166,12 @@ validate-go-version:
 
 
 protos_src := $(shell find ../api -type f -name '*.proto')
-gen_src := $(protos_src) Makefile
+gen_src := $(protos_src) ../buf.gen.yaml ../buf.gen.tag.yaml Makefile
 gen_sum := gen.sum
 protoc_opts := -I ../api:`go list -m -mod=mod -f {{.Dir}} github.com/grpc-ecosystem/grpc-gateway`/third_party/googleapis:`go list -m -mod=mod -f {{.Dir}} github.com/gogo/protobuf`:/protobuf
 pb.generate: gen.sum validate-go-version
 $(gen_sum): $(gen_src)
-	$(call check-program, shasum docker $(GO))
-	@shasum $(gen_src) | sort -k 2 > $(gen_sum).tmp
-	@diff -q $(gen_sum).tmp $(gen_sum) || ( \
-	  uid=`id -u`; \
-	  set -xe; \
-	  $(GO) mod download; \
-	  docker run \
-		--user="$$uid" \
-		--volume="`go env GOPATH`/pkg/mod:/go/pkg/mod" \
-		--volume="$(PWD)/..:/go/src/berty.tech/berty" \
-		--workdir="/go/src/berty.tech/berty/go" \
-		--entrypoint="sh" \
-		--rm \
-		bertytech/buf:6 \
-		-xec 'make generate_local'; \
-	  $(MAKE) tidy \
-	)
+	$(MAKE) generate_local
 .PHONY: pb.generate
 
 
@@ -204,7 +188,7 @@ generate_local:
 
 go.fmt:
 	go run github.com/daixiang0/gci write . \
-		--skip-generated -s 'standard,default,prefix(berty.tech)'
+		--skip-generated -s 'standard,default,prefix(github.com/core-laboratories/weshnet)'
 	go run mvdan.cc/gofumpt -w .
 
 .PHONY: go.fmt
@@ -223,47 +207,8 @@ gen.clean:
 ##
 
 
-doc.generate: md.generate depaware.generate
+doc.generate: depaware.generate
 .PHONY: doc.generate
-
-md.generate: install
-	mkdir -p .tmp
-
-	# generate embeddable outputs
-	echo 'foo@bar:~$$ berty -h' > .tmp/berty-usage.txt
-	(berty -h || true) 2>> .tmp/berty-usage.txt
-	for sub in `berty -h 2>&1 | grep "^  [a-z]" | sed 1d | awk '{print $$1}'`; do \
-		echo >> .tmp/berty-usage.txt; \
-		echo 'foo@bar:~$$ berty '$$sub' -h' >> .tmp/berty-usage.txt; \
-		(berty $$sub -h || true) 2>> .tmp/berty-usage.txt; \
-	done
-
-	echo 'foo@bar:~$$ berty share-invite' > .tmp/berty-share-invite.txt
-	berty --log.filters="" share-invite -store.inmem -node.display-name=demo >> .tmp/berty-share-invite.txt
-
-	echo 'foo@bar:~$$ berty info' > .tmp/berty-info.txt
-	berty --log.filters="" info --info.anonymize -store.inmem >> .tmp/berty-info.txt
-
-	echo 'foo@bar:~$$ berty daemon' > .tmp/berty-daemon.txt
-	expect -c "set timeout 10; spawn -noecho docker run bertytech/berty --log.format=console --log.filters=info+:bty daemon -store.inmem; expect serving" >> .tmp/berty-daemon.txt
-	echo '...' >> .tmp/berty-daemon.txt
-
-	echo 'foo@bar:~$$ rdvp -h' > .tmp/rdvp-usage.txt
-	(rdvp -h || true) 2>> .tmp/rdvp-usage.txt
-	for sub in `rdvp -h 2>&1 | grep "^  [a-z]" | sed 1d | awk '{print $$1}'`; do \
-		echo >> .tmp/rdvp-usage.txt; \
-		echo 'foo@bar:~$$ rdvp '$$sub' -h' >> .tmp/rdvp-usage.txt; \
-		(rdvp $$sub -h || true) 2>> .tmp/rdvp-usage.txt; \
-	done
-
-	echo 'foo@bar:~$$ welcomebot -h' > .tmp/welcomebot-usage.txt
-	(welcomebot -h || true) 2>> .tmp/welcomebot-usage.txt
-
-	# FIXME: generate output for berty mini
-
-	go run github.com/campoy/embedmd -w README.md
-	#rm -rf .tmp
-.PHONY: md.generate
 
 
 ##
@@ -274,7 +219,7 @@ md.generate: install
 depaware.generate: ./cmd/*/depaware.txt
 .PHONY: depaware.generate
 
-depaware_pkgs = ./cmd/berty ./cmd/rdvp ./framework/bertybridge ./cmd/welcomebot  ./cmd/berty-doctor ./cmd/berty-integration
+depaware_pkgs = ./cmd/wesh ./cmd/rdvp ./framework/weshbridge ./cmd/welcomebot  ./cmd/wesh-doctor ./cmd/wesh-integration
 ./cmd/*/depaware.txt: ../go.sum
 	@set -xe; for pkg in $(depaware_pkgs); do $(GO) run github.com/tailscale/depaware --update $$pkg; done
 
@@ -289,12 +234,12 @@ depaware.check:
 
 
 doctor:
-	go run ./cmd/berty-doctor/
+	go run ./cmd/wesh-doctor/
 .PHONY: doctor
 
 
 doctor.verbose:
-	go run ./cmd/berty-doctor/ -v
+	go run ./cmd/wesh-doctor/ -v
 .PHONY: doctor.verbose
 
 
@@ -302,10 +247,10 @@ doctor.verbose:
 
 
 integration.dev:
-	go run ./cmd/berty-integration
+	go run ./cmd/wesh-integration
 .PHONY: integration.prod
 
 
 integration.prod:
-	go run ./cmd/berty-integration -integration.testbot=`cat ../config/config.gen.json | jq -r '.berty.contacts["testbot"].link'`
+	go run ./cmd/wesh-integration -integration.testbot=`cat ../config/config.gen.json | jq -r '.wesh.contacts["testbot"].link'`
 .PHONY: integration.prod

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes"
-	bridgepb "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertybridge"
+	bridgepb "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshbridge"
 	"google.golang.org/protobuf/proto"
 )
 

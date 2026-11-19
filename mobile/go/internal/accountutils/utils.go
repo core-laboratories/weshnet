@@ -92,12 +92,12 @@ func ListAccounts(ctx context.Context, rootDir string, ks NativeKeystore, logger
 	if _, err := os.Stat(accountsDir); os.IsNotExist(err) {
 		return []*accounttypes.AccountMetadata{}, nil
 	} else if err != nil {
-		return nil, errcode.ErrCode_ErrBertyAccountFSError.Wrap(err)
+		return nil, errcode.ErrCode_ErrWeshAccountFSError.Wrap(err)
 	}
 
 	subitems, err := os.ReadDir(accountsDir)
 	if err != nil {
-		return nil, errcode.ErrCode_ErrBertyAccountFSError.Wrap(err)
+		return nil, errcode.ErrCode_ErrWeshAccountFSError.Wrap(err)
 	}
 
 	var accounts []*accounttypes.AccountMetadata
@@ -143,15 +143,15 @@ func GetAccountMetaForName(ctx context.Context, rootDir string, accountID string
 
 	ds, err := GetRootDatastoreForPath(GetAccountDir(rootDir, accountID), storageKey, storageSalt, logger)
 	if err != nil {
-		return nil, errcode.ErrCode_ErrBertyAccountFSError.Wrap(err)
+		return nil, errcode.ErrCode_ErrWeshAccountFSError.Wrap(err)
 	}
 
 	metaBytes, err := ds.Get(ctx, datastore.NewKey(AccountMetafileName))
 	if err == datastore.ErrNotFound {
-		return nil, errcode.ErrCode_ErrBertyAccountDataNotFound
+		return nil, errcode.ErrCode_ErrWeshAccountDataNotFound
 	} else if err != nil {
 		logger.Warn("unable to read account metadata", zap.Error(err), logutil.PrivateString("account-id", accountID))
-		return nil, errcode.ErrCode_ErrBertyAccountFSError.Wrap(fmt.Errorf("unable to read account metadata: %w", err))
+		return nil, errcode.ErrCode_ErrWeshAccountFSError.Wrap(fmt.Errorf("unable to read account metadata: %w", err))
 	}
 
 	if err := ds.Close(); err != nil {

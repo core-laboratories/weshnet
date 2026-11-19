@@ -1,12 +1,10 @@
-# Berty Welcome Bot
+# Wesh Welcome Bot
 
-`Welcome Bot` is a Berty bot with the aim of onboarding people to discover the features of the app before having real friends also on the app.
+`Welcome Bot` helps people discover the app before they have contacts to chat with.
 
 ## Usage
 
 1. add the bot as contact
-
-[embedmd]: # '../../../config/.tmp/qr-welcome-bot.txt txt'
 
 ```txt
 █████████████████████████████████████████████████████
@@ -36,10 +34,10 @@
 ████▄▄▄▄▄▄▄█▄█▄▄██▄█▄▄▄▄▄▄▄▄▄██▄▄██▄▄████▄█▄███▄▄████
 █████████████████████████████████████████████████████
 ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-https://berty.tech/id#contact/oZBLF1QtpQqrKjikvbjJLVmDWSNJpevG5FiSZxqFr2Wc31nRqy8t9tDjhiikcJrCMxRDPBFmLNQ44xi5SJJTKckjvFFrjPu/name=Welcome-Bot
+https://tone.onl/id#contact/oZBLF1QtpQqrKjikvbjJLVmDWSNJpevG5FiSZxqFr2Wc31nRqy8t9tDjhiikcJrCMxRDPBFmLNQ44xi5SJJTKckjvFFrjPu/name=Welcome-Bot
 ```
 
-2. follow what the bot is saying
+1. follow the bot's instructions
 
 ## Deployment
 

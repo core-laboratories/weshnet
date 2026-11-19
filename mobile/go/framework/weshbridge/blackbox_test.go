@@ -15,7 +15,7 @@ import (
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/framework/weshbridge"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes"
-	bridge_svc "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertybridge"
+	bridge_svc "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshbridge"
 	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 )
 
@@ -174,7 +174,7 @@ func TestExample(t *testing.T) {
 		fmt.Println("[+] has websocket listener:          ", hasGRPCWebSocket) // yes, because `--node.listeners`` contains grpcws
 	}
 
-	// make unary call to underlying `BertyMessenger` Service
+	// make unary call to underlying `WeshMessenger` Service
 	{
 		// create `ServiceGetConfiguration` Input
 		input := &protocoltypes.ServiceGetConfiguration_Request{}

@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"time"
 
-	push "github.com/core-laboratories/weshnet/mobile/v2/go/framework/bertypush"
+	push "github.com/core-laboratories/weshnet/mobile/v2/go/framework/weshpush"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/accountutils"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/pushtypes"

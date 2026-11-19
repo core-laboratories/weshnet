@@ -8,13 +8,13 @@ import (
 
 func TestGenWorks(t *testing.T) {
 	// we have at least welcomebot and testbot, and each contact has a link
-	require.NotNil(t, Config.Berty.Contacts)
-	require.True(t, len(Config.Berty.Contacts) >= 1)
+	require.NotNil(t, Config.Wesh.Contacts)
+	require.True(t, len(Config.Wesh.Contacts) >= 1)
 	for _, contact := range []string{"welcomebot", "testbot"} {
-		require.NotNil(t, Config.Berty.Contacts[contact])
+		require.NotNil(t, Config.Wesh.Contacts[contact])
 	}
-	for idx := range Config.Berty.Contacts {
-		require.NotEmpty(t, Config.Berty.Contacts[idx].Link)
+	for idx := range Config.Wesh.Contacts {
+		require.NotEmpty(t, Config.Wesh.Contacts[idx].Link)
 	}
 
 	// we have at least one rdvp and each one has a maddr

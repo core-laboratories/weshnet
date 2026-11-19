@@ -59,7 +59,7 @@ formatters:
       sections:
         - standard
         - default
-        - prefix(berty.tech)
+        - prefix(wesh.tech)
   exclusions:
     generated: lax
     paths:

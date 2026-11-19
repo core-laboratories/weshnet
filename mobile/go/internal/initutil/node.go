@@ -8,7 +8,7 @@ import (
 	"os/user"
 	"strings"
 
-	grpcgw "github.com/grpc-ecosystem/grpc-gateway/runtime"
+	grpcgw "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,11 +17,11 @@ import (
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/accountutils"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcserver"
-	berty_grpcutil "github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertymessenger"
+	wesh_grpcutil "github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/pushtypes"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshmessenger"
 	"github.com/core-laboratories/weshnet/v2"
 	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/grpcutil"
@@ -95,7 +95,7 @@ func (m *Manager) DisableIPFSNetwork() {
 }
 
 func (m *Manager) SetupRemoteNodeFlags(fs *flag.FlagSet) {
-	fs.StringVar(&m.Node.GRPC.RemoteAddr, "node.remote-addr", "", "remote Berty gRPC API address")
+	fs.StringVar(&m.Node.GRPC.RemoteAddr, "node.remote-addr", "", "remote Wesh gRPC API address")
 }
 
 func (m *Manager) SetupLocalMessengerServerFlags(fs *flag.FlagSet) {
@@ -442,7 +442,7 @@ func (m *Manager) getGRPCServer() (*grpc.Server, *grpcgw.ServeMux, error) {
 	return m.Node.GRPC.server, m.Node.GRPC.gatewayMux, nil
 }
 
-func (m *Manager) GetGRPCListeners() []berty_grpcutil.Listener {
+func (m *Manager) GetGRPCListeners() []wesh_grpcutil.Listener {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	return m.Node.GRPC.listeners
@@ -564,7 +564,7 @@ func (m *Manager) restoreMessengerDataFromExport() error {
 	m.Node.Messenger.localDBState = &messengertypes.LocalDatabaseState{}
 
 	ctx := m.getContext()
-	if err := bertymessenger.RestoreFromAccountExport(ctx, f, coreAPI, odb, m.Node.Messenger.localDBState, logger); err != nil {
+	if err := weshmessenger.RestoreFromAccountExport(ctx, f, coreAPI, odb, m.Node.Messenger.localDBState, logger); err != nil {
 		return errcode.ErrCode_ErrInternal.Wrap(err)
 	}
 
@@ -651,7 +651,7 @@ func (m *Manager) getLocalMessengerServer() (messengertypes.MessengerServiceServ
 	}
 
 	// messenger server
-	opts := bertymessenger.Opts{
+	opts := weshmessenger.Opts{
 		EnableGroupMonitor:  !m.Node.Messenger.DisableGroupMonitor,
 		DB:                  db,
 		Logger:              logger,
@@ -664,7 +664,7 @@ func (m *Manager) getLocalMessengerServer() (messengertypes.MessengerServiceServ
 		LogFilePath:         currentLogfilePath,
 		GRPCInsecureMode:    m.Node.ServiceInsecureMode,
 	}
-	messengerServer, err := bertymessenger.New(protocolClient, &opts)
+	messengerServer, err := weshmessenger.New(protocolClient, &opts)
 	if err != nil {
 		return nil, errcode.ErrCode_TODO.Wrap(fmt.Errorf("unable to init messenger server: %w", err))
 	}

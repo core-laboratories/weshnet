@@ -3,28 +3,28 @@ syntax = "proto3";
 package wesh.messenger.v1;
 
 import "protocoltypes.proto";
-import "pushtypes/bertypushtypes.proto";
+import "pushtypes/weshpushtypes.proto";
 import "tagger/tagger.proto";
 
 option go_package = "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes";
 
-// MessengerService is the top-level API that uses the weshnet.protocol to implement the Berty Messenger specific logic.
-// Today, most of the Berty Messenger logic is implemented directly in the application (see the /js folder of this repo).
+// MessengerService is the top-level API that uses the weshnet.protocol to implement the Wesh Messenger specific logic.
+// Today, most of the Wesh Messenger logic is implemented directly in the application (see the /js folder of this repo).
 service MessengerService {
-  // InstanceShareableBertyID returns a Berty ID that can be shared as a string, QR code or deep link.
-  rpc InstanceShareableBertyID(InstanceShareableBertyID.Request) returns (InstanceShareableBertyID.Reply);
+  // InstanceShareableWeshID returns a Wesh ID that can be shared as a string, QR code or deep link.
+  rpc InstanceShareableWeshID(InstanceShareableWeshID.Request) returns (InstanceShareableWeshID.Reply);
 
-  // ShareableBertyGroup returns a Berty Group that can be shared as a string, QR code or deep link.
-  rpc ShareableBertyGroup(ShareableBertyGroup.Request) returns (ShareableBertyGroup.Reply);
+  // ShareableWeshGroup returns a Wesh Group that can be shared as a string, QR code or deep link.
+  rpc ShareableWeshGroup(ShareableWeshGroup.Request) returns (ShareableWeshGroup.Reply);
 
-  // DevShareInstanceBertyID shares your Berty ID on a dev channel.
+  // DevShareInstanceWeshID shares your Wesh ID on a dev channel.
   // TODO: remove for public.
-  rpc DevShareInstanceBertyID(DevShareInstanceBertyID.Request) returns (DevShareInstanceBertyID.Reply);
+  rpc DevShareInstanceWeshID(DevShareInstanceWeshID.Request) returns (DevShareInstanceWeshID.Reply);
 
   // DevStreamLogs streams logs from the ring-buffer.
   rpc DevStreamLogs(DevStreamLogs.Request) returns (stream DevStreamLogs.Reply);
 
-  // ParseDeepLink parses a link in the form of berty://xxx or https://berty.tech/id# and returns a structure
+  // ParseDeepLink parses a link in the form of wesh://xxx or https://tone.onl/id# and returns a structure
   // that can be used to display information.
   // This action is read-only.
   rpc ParseDeepLink(ParseDeepLink.Request) returns (ParseDeepLink.Reply);
@@ -61,9 +61,6 @@ service MessengerService {
 
   // ReplicationSetAutoEnable Sets whether new groups should be replicated automatically or not
   rpc ReplicationSetAutoEnable(ReplicationSetAutoEnable.Request) returns (ReplicationSetAutoEnable.Reply);
-
-  // BannerQuote returns the quote of the day.
-  rpc BannerQuote(BannerQuote.Request) returns (BannerQuote.Reply);
 
   // InstanceExportData exports instance data
   rpc InstanceExportData (InstanceExportData.Request) returns (stream InstanceExportData.Reply);
@@ -195,7 +192,7 @@ message EchoDuplexTest {
   }
 }
 
-message InstanceShareableBertyID {
+message InstanceShareableWeshID {
   message Request {
     // reset will regenerate a new link
     bool reset = 1;
@@ -204,25 +201,25 @@ message InstanceShareableBertyID {
     bytes passphrase = 3;
   }
   message Reply {
-    BertyLink link = 1;
+    WeshLink link = 1;
     string internal_url = 2;
     string web_url = 3;
   }
 }
 
-message ShareableBertyGroup {
+message ShareableWeshGroup {
   message Request {
     bytes group_pk = 1;
     string group_name = 2;
   }
   message Reply {
-    BertyLink link = 1;
+    WeshLink link = 1;
     string internal_url = 2;
     string web_url = 3;
   }
 }
 
-message DevShareInstanceBertyID {
+message DevShareInstanceWeshID {
   message Request {
     // reset will regenerate a new link
     bool reset = 1;
@@ -245,15 +242,15 @@ message ParseDeepLink {
     bytes passphrase = 2;
   }
   message Reply {
-    BertyLink link = 1;
+    WeshLink link = 1;
   }
 }
 
-message BertyLink {
+message WeshLink {
   Kind kind = 1;
-  BertyID berty_id = 2;
-  BertyGroup berty_group = 3;
-  BertyMessageRef berty_message_ref = 5;
+  WeshID wesh_id = 2;
+  WeshGroup wesh_group = 3;
+  WeshMessageRef wesh_message_ref = 5;
   Encrypted encrypted = 4;
 
   // Encrypted is a clear structure containing clear and encrypted fields.
@@ -299,7 +296,7 @@ message BertyLink {
     MessageV1Kind = 4;
   }
 
-  message BertyMessageRef {
+  message WeshMessageRef {
     string account_id = 1;
     string group_pk = 2;
     string message_id = 3;
@@ -308,20 +305,20 @@ message BertyLink {
 
 message SendContactRequest {
   message Request {
-    BertyID berty_id = 1;
+    WeshID wesh_id = 1;
     bytes metadata = 2;
     bytes own_metadata = 3;
   }
   message Reply {}
 }
 
-message BertyID {
+message WeshID {
   bytes public_rendezvous_seed = 1;
   bytes account_pk = 2;
   string display_name = 3;
 }
 
-message BertyGroup {
+message WeshGroup {
   weshnet.protocol.v1.Group group = 1;
   string display_name = 2;
 }
@@ -905,16 +902,6 @@ message ReplicationSetAutoEnable {
     bool enabled = 1;
   }
   message Reply {
-  }
-}
-
-message BannerQuote {
-  message Request {
-    bool random = 1;
-  }
-  message Reply {
-    string quote = 1;
-    string author = 2;
   }
 }
 

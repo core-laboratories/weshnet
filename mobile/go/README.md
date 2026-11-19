@@ -1,7 +1,4 @@
-# Berty `go/`
-
-[![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/core-laboratories/weshnet/mobile/v2)
-[![Code coverage](https://codecov.io/gh/berty/berty/branch/master/graph/badge.svg?token=rBPpNHNNow)](https://codecov.io/gh/berty/berty)
+# Wesh `go/`
 
 __Please, read the main [`README.md`](../README.md) file first.__
 
@@ -10,9 +7,10 @@ This folder contains most of the go code needed by the project.
 ## Download
 
 Main binary:
+
 ```sh
-git clone https://github.com/berty/berty
-cd berty/go
+git clone https://github.com/core-laboratories/weshnet
+cd weshnet/mobile/go
 make install
 
 # if things go wrong, please run and share the result of
@@ -22,21 +20,21 @@ make doctor
 ## Main components
 
 * [`./cmd/...`](./cmd): binaries / entrypoints
-    * `cd go; make install`
+  * `cd go; make install`
 * [`./pkg/...`](./pkg): packages especially made to be imported by other projects
-    * [`./bertyprotocol`](./pkg/bertyprotocol): the [Wesh Protocol](https://berty.tech/protocol)
-    * ...
-* [`./internal/`](./internal): internal packages that can be useful to understand how things are working under the hood
-    * _you won't be able to import them directly from your projects; if you think that an internal package should be made public, open an issue_
+  * [`./weshprotocol`](./pkg/weshprotocol): the [Wesh Protocol](https://tone.onl/protocol)
+  * ...
+* [`./internal/`](./internal): internal packages that explain how the project works
+  * These packages cannot be imported directly by other projects.
+    Open an issue if one should become public.
 * [`./framework`](./framework): bridges used by mobile apps
 
 ## Usage
 
 ### Daemon
 
-[embedmd]:# (.tmp/berty-daemon.txt console)
 ```console
-foo@bar:~$ berty daemon
+foo@bar:~$ wesh daemon
 2020-11-16T20:46:31Z	INFO    bty                 metrics listener	{"handler": "/bty/metrics", "listener": "[::]:8888"}
 ...
 ```
@@ -44,26 +42,33 @@ foo@bar:~$ berty daemon
 Now you can interact with the daemon API.
 
 ### Mini
-This part is so you can quickly use Berty Mini in your terminal, this is not an in-depth explanation about all the commands.
 
-To open Berty Mini run:
+Wesh Mini provides a quick terminal client. This section covers the basic commands.
+
+To open Wesh Mini run:
+
 ```console
-foo@bar:~$ berty mini
+foo@bar:~$ wesh mini
 ```
-Or in the `berty/go/cmd/berty` folder enter
+
+Or in the `weshnet/mobile/go/cmd/wesh` folder enter
+
 ```console
 foo@bar:~$ go run . mini
 ```
 
 #### Help
-`/help` To get all available commands in berty mini, and what they do.
+
+`/help` To get all available commands in wesh mini, and what they do.
 
 #### Contact
+
 `/contact share qr` To get a QR code you can scan with a phone. </br>
 `/contact share qr` To get a QR code you can scan with a phone. </br>
 `/contact accept all` To accept all incoming contact requests.
 
 #### Navigation
+
 For details, use `/keyboard`
 
 Most important: </br>
@@ -74,22 +79,20 @@ Alternatively you can use the following: </br>
 `ctrl + arrow down` To go to the chat below. </br>
 `ctrl + arrow up` To go to the chat above.
 
-Closing Berty mini: </br>
-`ctrl + c` To exit Berty mini, or use `esc`.
+Closing Wesh mini: </br>
+`ctrl + c` To exit Wesh mini, or use `esc`.
 
 ### Share Invite
 
-[embedmd]:# (.tmp/berty-share-invite.txt console)
 ```console
-foo@bar:~$ berty share-invite
-https://berty.tech/id#contact/oZBLFX8N5b8YvBsaFgLtJDkHPbvkRUVn1kGiKop2cFyUPoqCChedZizRzDZybrd6AosgxhhaBzd4VhN7FviNfyh9qfBRJWc/name=demo
+foo@bar:~$ wesh share-invite
+https://tone.onl/id#contact/oZBLFX8N5b8YvBsaFgLtJDkHPbvkRUVn1kGiKop2cFyUPoqCChedZizRzDZybrd6AosgxhhaBzd4VhN7FviNfyh9qfBRJWc/name=demo
 ```
 
 ### Info
 
-[embedmd]:# (.tmp/berty-info.txt console)
 ```console
-foo@bar:~$ berty info
+foo@bar:~$ wesh info
 {
   "protocol": {
     "process": {
@@ -111,7 +114,7 @@ foo@bar:~$ berty info
       "pid": "8332",
       "ppid": "7",
       "priority": "20",
-      "workingDir": "/Users/foo/go/src/berty.tech/berty/go",
+      "workingDir": "/Users/foo/go/src/wesh.tech/wesh/go",
       "systemUsername": "foo"
     },
     "p2p": {
@@ -135,17 +138,15 @@ foo@bar:~$ berty info
 
 ### `--help`
 
-[embedmd]:# (.tmp/berty-usage.txt console)
 ```console
-foo@bar:~$ berty -h
+foo@bar:~$ wesh -h
 USAGE
-  berty [global flags] <subcommand> [flags] [args...]
+  wesh [global flags] <subcommand> [flags] [args...]
 
 SUBCOMMANDS
-  daemon          start a full Berty instance (Wesh Protocol + Berty Messenger)
-  account-daemon  start a full Berty instance (Berty Account)
-  mini            start a terminal-based mini berty client (some messaging features not compatible with the app)
-  banner          print the Berty banner of the day
+  daemon          start a full Wesh instance (Wesh Protocol + Wesh Messenger)
+  account-daemon  start a full Wesh instance (Wesh Account)
+  mini            start a terminal-based mini wesh client (some messaging features not compatible with the app)
   version         print software version
   info            display system info
   groupinit       initialize a new multi-member group
@@ -153,7 +154,7 @@ SUBCOMMANDS
   token-server    token server, a basic token server issuer without auth or logging
   repl-server     replication server
   peers           list peers
-  export          export messenger data from the specified berty node
+  export          export messenger data from the specified wesh node
   remote-logs     stream logs from a remote node
   service-key     helper to generate a key for managed services
   push-server     push relay server
@@ -174,9 +175,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty daemon -h
+foo@bar:~$ wesh daemon -h
 USAGE
-  berty [global flags] daemon [flags]
+  wesh [global flags] daemon [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -189,7 +190,6 @@ FLAGS
   -log.tyber-auto-attach ...                                              tyber host addresses to be automatically attached to
   -metrics.listener ...                                                   Metrics listener, will enable metrics
   -metrics.pedantic false                                                 Enable Metrics pedantic for debug
-  -no-banner false                                                        do not print the Berty banner on startup
   -no-qr false                                                            do not print the QR code in terminal on startup
   -no-system-info false                                                   do not print system info on startup
   -node.default-push-token ...                                            base 64 encoded default platform push token
@@ -229,7 +229,7 @@ FLAGS
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -passphrase ...                                                         optional sharing-link encryption passphrase
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -241,11 +241,11 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty account-daemon -h
+foo@bar:~$ wesh account-daemon -h
 USAGE
-  berty [global flags] account-daemon [flags]
+  wesh [global flags] account-daemon [flags]
 
 FLAGS
   -log.file ...                                                           log file path (pattern)
@@ -257,7 +257,7 @@ FLAGS
   -log.tyber-auto-attach ...                                              tyber host addresses to be automatically attached to
   -node.account.listeners /ip4/127.0.0.1/tcp/9092/grpc                    gRPC account API listeners
   -node.listeners /ip4/127.0.0.1/tcp/9091/grpc                            gRPC API listeners
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -265,9 +265,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty mini -h
+foo@bar:~$ wesh mini -h
 USAGE
-  berty [global flags] mini [flags]
+  wesh [global flags] mini [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -289,7 +289,7 @@ FLAGS
   -node.no-notif false                                                    disable desktop notifications
   -node.rdv-rotation 24h0m0s                                              rendezvous rotation base for node
   -node.rebuild-db false                                                  reconstruct messenger DB from OrbitDB logs
-  -node.remote-addr ...                                                   remote Berty gRPC API address
+  -node.remote-addr ...                                                   remote Wesh gRPC API address
   -node.restore-export-path ...                                           inits node from a specified export path
   -node.service-insecure false                                            use insecure connection on services
   -p2p.autorelay true                                                     enable autorelay, force private reachability
@@ -318,7 +318,7 @@ FLAGS
   -p2p.tinder-rdvp-driver true                                            if true rdvp driver will be enable for tinder
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -330,39 +330,19 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty banner -h
+foo@bar:~$ wesh version -h
 USAGE
-  berty banner [flags]
-
-FLAGS
-  -config ...                                     config file (optional)
-  -light false                                    light mode
-  -log.file ...                                   log file path (pattern)
-  -log.file-filters debug+:bty*,-*.grpc,error+:*  file zapfilter configuration
-  -log.filters info+:bty*,-*.grpc,error+:*        stderr zapfilter configuration
-  -log.format color                               stderr logging format. can be: json, console, color, light-console, light-color
-  -log.ring-filters info+:bty*,-*.grpc,error+:*   ring zapfilter configuration
-  -log.ring-size 10                               ring buffer size in MB
-  -log.tyber-auto-attach ...                      tyber host addresses to be automatically attached to
-  -random false                                   pick a random quote
+  wesh version
 
 ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty version -h
+foo@bar:~$ wesh info -h
 USAGE
-  berty version
-
-ADVANCED
-  -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
-                                   -> more info at https://github.com/moul/zapfilter
-
-foo@bar:~$ berty info -h
-USAGE
-  berty [global flags] info [flags]
+  wesh [global flags] info [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -381,7 +361,7 @@ FLAGS
   -node.no-notif false                                                    disable desktop notifications
   -node.rdv-rotation 24h0m0s                                              rendezvous rotation base for node
   -node.rebuild-db false                                                  reconstruct messenger DB from OrbitDB logs
-  -node.remote-addr ...                                                   remote Berty gRPC API address
+  -node.remote-addr ...                                                   remote Wesh gRPC API address
   -node.restore-export-path ...                                           inits node from a specified export path
   -node.service-insecure false                                            use insecure connection on services
   -p2p.autorelay true                                                     enable autorelay, force private reachability
@@ -410,7 +390,7 @@ FLAGS
   -p2p.tinder-rdvp-driver true                                            if true rdvp driver will be enable for tinder
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -422,11 +402,11 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty groupinit -h
+foo@bar:~$ wesh groupinit -h
 USAGE
-  berty groupinit
+  wesh groupinit
 
 FLAGS
   -config ...                                     config file (optional)
@@ -444,9 +424,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty share-invite -h
+foo@bar:~$ wesh share-invite -h
 USAGE
-  berty [global flags] share-invite [flags]
+  wesh [global flags] share-invite [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -466,7 +446,7 @@ FLAGS
   -node.no-notif false                                                    disable desktop notifications
   -node.rdv-rotation 24h0m0s                                              rendezvous rotation base for node
   -node.rebuild-db false                                                  reconstruct messenger DB from OrbitDB logs
-  -node.remote-addr ...                                                   remote Berty gRPC API address
+  -node.remote-addr ...                                                   remote Wesh gRPC API address
   -node.restore-export-path ...                                           inits node from a specified export path
   -node.service-insecure false                                            use insecure connection on services
   -p2p.autorelay true                                                     enable autorelay, force private reachability
@@ -496,7 +476,7 @@ FLAGS
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -passphrase ...                                                         optional sharing-link encryption passphrase
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -508,11 +488,11 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty token-server -h
+foo@bar:~$ wesh token-server -h
 USAGE
-  berty [global flags] token-server [flags]
+  wesh [global flags] token-server [flags]
 
 FLAGS
   -auth.secret ...                                base64 encoded secret
@@ -535,9 +515,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty repl-server -h
+foo@bar:~$ wesh repl-server -h
 USAGE
-  berty [global flags] repl-server [flags]
+  wesh [global flags] repl-server [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -580,7 +560,7 @@ FLAGS
   -p2p.tinder-rdvp-driver true                                            if true rdvp driver will be enable for tinder
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -592,11 +572,11 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty peers -h
+foo@bar:~$ wesh peers -h
 USAGE
-  berty [global flags] peers [flags]
+  wesh [global flags] peers [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -609,7 +589,7 @@ FLAGS
   -log.tyber-auto-attach ...                                              tyber host addresses to be automatically attached to
   -node.default-push-token ...                                            base 64 encoded default platform push token
   -node.rdv-rotation 24h0m0s                                              rendezvous rotation base for node
-  -node.remote-addr ...                                                   remote Berty gRPC API address
+  -node.remote-addr ...                                                   remote Wesh gRPC API address
   -node.service-insecure false                                            use insecure connection on services
   -p2p.autorelay true                                                     enable autorelay, force private reachability
   -p2p.ble false                                                          if true Bluetooth Low Energy will be enabled
@@ -638,7 +618,7 @@ FLAGS
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -peers.refresh 1s                                                       refresh every DURATION (0: no refresh)
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -650,11 +630,11 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty export -h
+foo@bar:~$ wesh export -h
 USAGE
-  berty [global flags] export [flags]
+  wesh [global flags] export [flags]
 
 FLAGS
   -config ...                                                             config file (optional)
@@ -672,7 +652,7 @@ FLAGS
   -node.no-notif false                                                    disable desktop notifications
   -node.rdv-rotation 24h0m0s                                              rendezvous rotation base for node
   -node.rebuild-db false                                                  reconstruct messenger DB from OrbitDB logs
-  -node.remote-addr ...                                                   remote Berty gRPC API address
+  -node.remote-addr ...                                                   remote Wesh gRPC API address
   -node.restore-export-path ...                                           inits node from a specified export path
   -node.service-insecure false                                            use insecure connection on services
   -p2p.autorelay true                                                     enable autorelay, force private reachability
@@ -701,7 +681,7 @@ FLAGS
   -p2p.tinder-rdvp-driver true                                            if true rdvp driver will be enable for tinder
   -p2p.webui-listener :3999                                               IPFS WebUI listener
   -preset ...                                                             applies various default values, see ADVANCED section below
-  -store.dir /Users/foo/Library/Application Support/berty-tech/berty  root datastore directory
+  -store.dir /Users/foo/Library/Application Support/wesh-tech/wesh  root datastore directory
   -store.inmem false                                                      disable datastore persistence
   -store.shared-dir ...                                                   shared root datastore directory
 
@@ -713,22 +693,22 @@ ADVANCED
   -preset=volatile                       similar to performance but optimize for a quick throwable node: -store.inmem=true -p2p.ipfs-api-listeners="" -p2p.swarm-listeners="" -p2p.webui-listener=""
   -p2p.swarm-listeners=:default:,CUSTOM  equivalent to -p2p.swarm-listeners=/ip4/0.0.0.0/tcp/0,/ip6/::/tcp/0,CUSTOM
   -p2p.rdvp=:default:,CUSTOM             equivalent to -p2p.rdvp=/ip4/52.47.79.109/tcp/4040/p2p/12D3KooWKhU...,CUSTOM
-                                         -> full list available at https://github.com/berty/berty/tree/master/config)
+                                         -> full list available at https://github.com/core-laboratories/weshnet/tree/master/config)
 
-foo@bar:~$ berty remote-logs -h
+foo@bar:~$ wesh remote-logs -h
 USAGE
-  berty [global flags] remote-logs
+  wesh [global flags] remote-logs
 
 FLAGS
-  -node.remote-addr ...  remote Berty gRPC API address
+  -node.remote-addr ...  remote Wesh gRPC API address
 
 ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty service-key -h
+foo@bar:~$ wesh service-key -h
 USAGE
-  berty service-key [flags] [command]
+  wesh service-key [flags] [command]
 
 FLAGS
   -auth.sk ...  base64 encoded ed25519 private key to convert to a public key
@@ -737,9 +717,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty push-server -h
+foo@bar:~$ wesh push-server -h
 USAGE
-  berty [global flags] push-server [flags]
+  wesh [global flags] push-server [flags]
 
 FLAGS
   -apns ...                                       Apple's apns certs path, comma-separated
@@ -760,9 +740,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty p2p -h
+foo@bar:~$ wesh p2p -h
 USAGE
-  berty p2p [command]
+  wesh p2p [command]
 
 SUBCOMMANDS
   generate-id  helper to generate a key identity for libp2p service
@@ -772,9 +752,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty relay -h
+foo@bar:~$ wesh relay -h
 USAGE
-  berty [global flags] relay [flags]
+  wesh [global flags] relay [flags]
 
 FLAGS
   -key-autogenerate true                                                                                    auto-generate key if none is found
@@ -806,9 +786,9 @@ ADVANCED
   -log.filters=':default: CUSTOM'  equivalent to -log.filters='info+:bty*,-*.grpc,error+:* CUSTOM'
                                    -> more info at https://github.com/moul/zapfilter
 
-foo@bar:~$ berty vc-issuer -h
+foo@bar:~$ wesh vc-issuer -h
 USAGE
-  berty [global flags] vc-issuer [flags]
+  wesh [global flags] vc-issuer [flags]
 
 FLAGS
   -http.listener ...     http listener
@@ -824,15 +804,14 @@ ADVANCED
 
 ### `rdvp`
 
-[embedmd]:# (.tmp/rdvp-usage.txt console)
 ```console
 foo@bar:~$ rdvp -h
 USAGE
   rdvp [global flags] <subcommand>
 
 SUBCOMMANDS
-  serve     
-  genkey    
+  serve
+  genkey
   sharekey
 
 foo@bar:~$ rdvp serve -h
@@ -881,12 +860,11 @@ FLAGS
 
 ### `welcomebot`
 
-[embedmd]:# (.tmp/welcomebot-usage.txt console)
 ```console
 foo@bar:~$ welcomebot -h
 Usage of welcomebot:
   -addr string
-    	remote 'berty daemon' address (default "127.0.0.1:9091")
+	remote 'wesh daemon' address (default "127.0.0.1:9091")
   -display-name string
     	bot's display name (default "foo (Welcome Bot)")
   -log-format string

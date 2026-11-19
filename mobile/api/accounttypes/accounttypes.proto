@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package wesh.account.v1;
 
-import "pushtypes/bertypushtypes.proto";
+import "pushtypes/weshpushtypes.proto";
 import "protocoltypes.proto";
 
 option go_package = "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes";
@@ -10,7 +10,7 @@ option go_package = "github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accou
 service AccountService {
   /// Account
 
-  // OpenAccount starts a Berty node.
+  // OpenAccount starts a Wesh node.
   rpc OpenAccount (OpenAccount.Request) returns (OpenAccount.Reply);
 
   // OpenAccountWithProgress is similar to OpenAccount, but also streams the progress.

@@ -31,7 +31,7 @@ func verifySetupLeakDetection(t *testing.T) {
 
 	goleak.VerifyNone(t,
 		goleak.IgnoreTopFunction("github.com/ipfs/go-log/writer.(*MirrorWriter).logRoutine"), // global writer created at github.com/ipfs/go-log@v1.0.4/writer/option.go, refer by github.com/ipfs/, like go-bitswap
-		goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start"),              // called by init() in berty/go/internal/grpcutil/server.go
+		goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start"),              // called by init() in wesh/go/internal/grpcutil/server.go
 		goleak.IgnoreTopFunction("github.com/desertbit/timer.timerRoutine"),                  // called by init() in github.com/desertbit/timer/timers.go, refer in grpc-web
 	)
 }
@@ -89,7 +89,7 @@ func verifyRunningLeakDetection(t *testing.T) {
 		goleak.IgnoreTopFunction("github.com/libp2p/zeroconf/v2.(*client).mainloop"),            // the closing routine has big timeout, should be managed by ipfs
 		goleak.IgnoreTopFunction("github.com/libp2p/zeroconf/v2.(*client).periodicQuery"),       // the closing routine has big timeout, should be managed by ipfs
 		goleak.IgnoreTopFunction("github.com/ipfs/kubo/core/bootstrap.bootstrapConnect.func1 "), // the closing routine has big timeout, should be managed by ipfs
-		goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start"),                 // called by init() in berty/go/internal/grpcutil/server.go
+		goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start"),                 // called by init() in wesh/go/internal/grpcutil/server.go
 		goleak.IgnoreTopFunction("go.uber.org/fx.withTimeout"),                                  // sometimes happening on CI, need more investigation
 		goleak.IgnoreTopFunction("internal/poll.runtime_pollWait"),                              // upstream issue of mdns, go wakeup periodiclly to do action before check exist, timeout about 10 seconds
 		goleak.IgnoreTopFunction("net.(*netFD).connect.func2"),                                  // FIXME - many libraries used this code
@@ -147,7 +147,7 @@ func Example_noflags() {
 	manager.Node.Protocol.DisableIPFSNetwork = true
 	manager.Datastore.InMemory = true
 
-	// start a local berty protocol server
+	// start a local wesh protocol server
 	_, err = manager.GetLocalProtocolServer()
 	if err != nil {
 		panic(err)

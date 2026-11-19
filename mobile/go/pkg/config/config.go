@@ -1,8 +1,8 @@
 package config
 
-// BertyConfig represents the configuration file defined in /config/config.yml
-type BertyConfig struct {
-	Berty struct {
+// WeshConfig represents the configuration file defined in /config/config.yml
+type WeshConfig struct {
+	Wesh struct {
 		Contacts map[string]struct {
 			Link        string `json:"link"`
 			Name        string `json:"name"`
@@ -17,7 +17,7 @@ type BertyConfig struct {
 			Description string `json:"description"`
 			Suggestion  bool   `json:"suggestion"`
 		} `json:"conversations"`
-	} `json:"berty"`
+	} `json:"wesh"`
 	P2P struct {
 		RDVP []struct {
 			Maddr string `json:"maddr"`

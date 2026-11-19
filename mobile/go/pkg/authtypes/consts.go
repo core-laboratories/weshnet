@@ -5,8 +5,8 @@ type ContextAuthValue uint32
 const (
 	AuthResponseType        = "code"
 	AuthGrantType           = "authorization_code"
-	AuthRedirect            = "berty://services-auth/"
-	AuthClientID            = "berty"
+	AuthRedirect            = "wesh://services-auth/"
+	AuthClientID            = "wesh"
 	AuthCodeChallengeMethod = "S256"
 
 	ServiceReplicationID = "rpl"

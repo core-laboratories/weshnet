@@ -79,7 +79,7 @@ func (m *Manager) getLogger() (*zap.Logger, error) {
 		streams = append(streams, logutil.NewFileStream(m.Logging.FileFilters, "json", m.Logging.FilePath, m.Session.Kind))
 	}
 	if m.Logging.Native && (runtime.GOOS == "darwin" || runtime.GOOS == "android") {
-		nativeLogger := logutil.NewNativeLogger("tech.berty")
+		nativeLogger := logutil.NewNativeLogger("tech.wesh")
 		streams = append(streams, logutil.NewCustomStream(m.Logging.StderrFilters, nativeLogger))
 	}
 

@@ -24,17 +24,17 @@ import (
 	"moul.io/u"
 	"moul.io/zapconfig"
 
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertylinks"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyversion"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshlinks"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshversion"
 )
 
 const (
-	staffXConvPrefix = "Berty Staff X "
+	staffXConvPrefix = "Wesh Staff X "
 )
 
 var (
-	nodeAddr      = flag.String("addr", "127.0.0.1:9091", "remote 'berty daemon' address")
+	nodeAddr      = flag.String("addr", "127.0.0.1:9091", "remote 'wesh daemon' address")
 	displayName   = flag.String("display-name", safeDefaultDisplayName(), "bot's display name")
 	staffConvLink = flag.String("staff-conversation-link", "", "link of the staff's conversation to join")
 	storePath     = flag.String("store", "./welcomebot.store", "store file path")
@@ -152,7 +152,7 @@ func welcomebot() error {
 	{
 		cc, err := grpc.NewClient(*nodeAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
-			return fmt.Errorf("unable to connect with remote berty messenger node: %w", err)
+			return fmt.Errorf("unable to connect with remote wesh messenger node: %w", err)
 		}
 
 		// monitor grpc state
@@ -165,9 +165,9 @@ func welcomebot() error {
 				case connectivity.Idle:
 					break // ignore idle connection state
 				case connectivity.TransientFailure, connectivity.Shutdown:
-					bot.logger.Warn("connection with berty daemon", zap.String("status", state.String()), zap.String("addr", *nodeAddr))
+					bot.logger.Warn("connection with wesh daemon", zap.String("status", state.String()), zap.String("addr", *nodeAddr))
 				default:
-					bot.logger.Info("connection with berty daemon", zap.String("status", state.String()), zap.String("addr", *nodeAddr))
+					bot.logger.Info("connection with wesh daemon", zap.String("status", state.String()), zap.String("addr", *nodeAddr))
 				}
 			}
 		}()
@@ -176,12 +176,12 @@ func welcomebot() error {
 
 	// get sharing link and print qr code
 	{
-		req := &messengertypes.InstanceShareableBertyID_Request{DisplayName: *displayName}
-		res, err := bot.client.InstanceShareableBertyID(ctx, req)
+		req := &messengertypes.InstanceShareableWeshID_Request{DisplayName: *displayName}
+		res, err := bot.client.InstanceShareableWeshID(ctx, req)
 		if err != nil {
-			return fmt.Errorf("get instance shareable berty ID failed: %w", err)
+			return fmt.Errorf("get instance shareable wesh ID failed: %w", err)
 		}
-		bot.logger.Info("retrieve instance Berty ID", zap.String("link", res.WebUrl))
+		bot.logger.Info("retrieve instance Wesh ID", zap.String("link", res.WebUrl))
 		qrterminal.GenerateHalfBlock(res.InternalUrl, qrterminal.L, os.Stdout)
 	}
 
@@ -211,12 +211,12 @@ func welcomebot() error {
 			}
 
 			// store staffConvPk
-			link, err := bertylinks.UnmarshalLink(req.GetLink(), nil)
+			link, err := weshlinks.UnmarshalLink(req.GetLink(), nil)
 			if err != nil {
 				return fmt.Errorf("parse conv link: %w", err)
 			}
 
-			gpkb := link.GetBertyGroup().GetGroup().GetPublicKey()
+			gpkb := link.GetWeshGroup().GetGroup().GetPublicKey()
 			if gpkb == nil {
 				return fmt.Errorf("invalid group link")
 			}
@@ -450,10 +450,10 @@ func doStep2(ctx context.Context, _ *Conversation, bot *Bot, receivedMessage *me
 			}
 		case "demo version":
 			var body string
-			if bertyversion.VcsRef == "n/a" {
-				body = "berty " + bertyversion.Version + "\n" + runtime.Version()
+			if weshversion.VcsRef == "n/a" {
+				body = "wesh " + weshversion.Version + "\n" + runtime.Version()
 			} else {
-				body = "berty " + bertyversion.Version + " https://github.com/berty/berty/commits/" + bertyversion.VcsRef + "\n" + runtime.Version()
+				body = "wesh " + weshversion.Version + " https://github.com/core-laboratories/weshnet/commit/" + weshversion.VcsRef + "\n" + runtime.Version()
 			}
 			if err := bot.interactUserMessage(ctx, body, interaction.ConversationPublicKey); err != nil {
 				return false, fmt.Errorf("interact user message failed: %w", err)
@@ -517,7 +517,7 @@ func (bot *Bot) handleInteractionUpdated(ctx context.Context, sr *messengertypes
 }
 
 func (bot *Bot) handleConversationUpdated(ctx context.Context, sr *messengertypes.EventStream_Reply, payload proto.Message) error {
-	// send to multimember staff conv that this user join us on Berty with the link of the group
+	// send to multimember staff conv that this user join us on Wesh with the link of the group
 	conversation := payload.(*messengertypes.StreamEvent_ConversationUpdated).Conversation
 	if bot.store.StaffConvPK != "" && strings.HasPrefix(conversation.GetDisplayName(), staffXConvPrefix) {
 		userName := strings.TrimPrefix(conversation.GetDisplayName(), staffXConvPrefix)
@@ -557,7 +557,7 @@ For the moment i can't send a group invitation so i share the link of the conver
 
 	if conversation.Type == messengertypes.Conversation_ContactType && sr.GetEvent().GetIsNew() {
 		time.Sleep(2 * time.Second)
-		body := `Hey! 🙌 Welcome to Berty v1! 🎊
+		body := `Hey! 🙌 Welcome to Wesh v1! 🎊
 I’m here to help you with the onboarding process.
 Let's test out some features together!
 Just type 'yes' to let me know you copy that.`
@@ -646,8 +646,8 @@ func safeDefaultDisplayName() string {
 
 func getRandomReply() string {
 	available := []string{
-		"Welcome to Berty v1!",
-		"Hello! Welcome to Berty!",
+		"Welcome to Wesh v1!",
+		"Hello! Welcome to Wesh!",
 		"Hey, I hope you're feeling well here!",
 		"Hi, I'm here for you at anytime for tests!",
 		"Hello dude!",

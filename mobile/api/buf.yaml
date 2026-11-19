@@ -1,5 +1,5 @@
 version: v2
-name: buf.build/berty-technologies/berty
+name: buf.build/core-laboratories/weshnet-mobile
 deps:
   - buf.build/berty-technologies/weshnet
   - buf.build/srikrsna/protoc-gen-gotag

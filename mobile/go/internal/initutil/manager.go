@@ -10,7 +10,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	datastore "github.com/ipfs/go-datastore"
 	"github.com/ipfs/kubo/core"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
@@ -25,12 +25,12 @@ import (
 	"moul.io/zapring"
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/accountutils"
-	berty_grpcutil "github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
+	wesh_grpcutil "github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/notification"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertymessenger"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/mdns"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/messengertypes"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshmessenger"
 	"github.com/core-laboratories/weshnet/v2"
 	"github.com/core-laboratories/weshnet/v2/pkg/grpcutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
@@ -56,10 +56,10 @@ type Manager struct {
 		// When set, it is appended to the session-specific logging file.
 		// It follows the following format: '${driver}.${package}.${command}'.
 		// Examples:
-		//   cli.daemon       -> `go run ./cmd/berty daemon`
-		//   cli.mini         -> `go run ./cmd/berty mini`
+		//   cli.daemon       -> `go run ./cmd/wesh daemon`
+		//   cli.mini         -> `go run ./cmd/wesh mini`
 		//   cli.rdvp         -> `go run ./cmd/rdvp`
-		//   mobile.messenger -> Berty Messenger app using the bertybridge
+		//   mobile.messenger -> Wesh Messenger app using the weshbridge
 		Kind string `json:"Kind,omitempty"`
 
 		// ID is an auto-generated UUID that can be used by Tyber.
@@ -177,7 +177,7 @@ type Manager struct {
 
 			// internal
 			protocolClient      weshnet.ServiceClient
-			server              bertymessenger.Service
+			server              weshmessenger.Service
 			lcmanager           *lifecycle.Manager
 			notificationManager notification.Manager
 			client              messengertypes.MessengerServiceClient
@@ -205,7 +205,7 @@ type Manager struct {
 			bufServer         *grpc.Server
 			bufServerListener *grpcutil.BufListener
 			gatewayMux        *runtime.ServeMux
-			listeners         []berty_grpcutil.Listener
+			listeners         []wesh_grpcutil.Listener
 		} `json:"GRPC,omitempty"`
 		ServiceInsecureMode bool `json:"ServiceInsecureMode,omitempty"`
 	} `json:"Node,omitempty"`
@@ -273,7 +273,7 @@ func New(opts *ManagerOpts) (*Manager, error) {
 
 	// storage path
 	if !opts.DoNotSetDefaultDir {
-		storagePath := configdir.New("berty-tech", "berty")
+		storagePath := configdir.New("wesh-tech", "wesh")
 		storageDirs := storagePath.QueryFolders(configdir.Global)
 		if len(storageDirs) == 0 {
 			m.ctxCancel()

@@ -7,21 +7,21 @@ import (
 	"net/http"
 	"time"
 
-	grpcgw "github.com/grpc-ecosystem/grpc-gateway/runtime"
+	grpcgw "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	ma "github.com/multiformats/go-multiaddr"
 	manet "github.com/multiformats/go-multiaddr/net"
 	"google.golang.org/grpc"
 )
 
-// BertyCustomPrefix is a multiformat custom prefix
-const BertyCustomPrefix = 0xbe00
+// WeshCustomPrefix is a multiformat custom prefix
+const WeshCustomPrefix = 0xbe00
 
 const (
-	P_GRPC           = BertyCustomPrefix + 0x0002 //nolint:revive
-	P_GRPC_WEB       = BertyCustomPrefix + 0x0004 //nolint:revive
-	P_GRPC_WEBSOCKET = BertyCustomPrefix + 0x0008 //nolint:revive
-	P_GRPC_GATEWAY   = BertyCustomPrefix + 0x0016 //nolint:revive
+	P_GRPC           = WeshCustomPrefix + 0x0002 //nolint:revive
+	P_GRPC_WEB       = WeshCustomPrefix + 0x0004 //nolint:revive
+	P_GRPC_WEBSOCKET = WeshCustomPrefix + 0x0008 //nolint:revive
+	P_GRPC_GATEWAY   = WeshCustomPrefix + 0x0016 //nolint:revive
 )
 
 var protos = []ma.Protocol{

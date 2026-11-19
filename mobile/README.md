@@ -2,12 +2,13 @@
 
 This directory contains the Account and Messenger services and the native
 bridge used by Tone. It is shipped in the Weshnet source release so an app build
-does not depend on a separate Berty source checkout. The bridge lifecycle and
+does not depend on a separate Wesh source checkout. The bridge lifecycle and
 RPC routing live in `go/framework/weshbridge/bridge.go` and `bridge_rpc.go`.
 
 `mobile/` is a separate Go module at
-`github.com/core-laboratories/weshnet/mobile/v2`. The generated protocol services use `wesh.*` package names, with no legacy `berty.*` service aliases. This is a breaking
-change for existing account data and clients. This code incorporates Berty
+`github.com/core-laboratories/weshnet/mobile/v2`. The generated protocol services use `wesh.*`
+package names, with no legacy `wesh.*` service aliases. This is a breaking
+change for existing account data and clients. This code incorporates Wesh
 work and is not a clean-room service rewrite. See [NOTICE.md](NOTICE.md) and
 the Apache-2.0 and MIT license files here. The module depends on the Weshnet
 release declared in `go.mod`.
@@ -16,7 +17,7 @@ checkout of a release tag therefore builds the mobile runtime against the
 protocol code from that same tag. Update the `require` version when preparing
 the tag; the replacement remains local to this source checkout.
 
-The compatibility source was migrated from the local Berty fork at
+The compatibility source was migrated from the local Wesh fork at
 `efb07eb4be3802261901b1e173a8c69aa08e2d5d`, including its working-tree
 changes, with Tone's bridge routing and Weshnet RC compatibility updates.
 

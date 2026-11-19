@@ -1427,7 +1427,7 @@ func (h *EventHandler) accountVerifiedCredentialRegistered(gme *protocoltypes.Gr
 
 	acc, err := h.db.GetAccount()
 	if err != nil {
-		return errcode.ErrCode_ErrBertyAccountDataNotFound.Wrap(err)
+		return errcode.ErrCode_ErrWeshAccountDataNotFound.Wrap(err)
 	}
 
 	if err := h.dispatcher.StreamEvent(mt.StreamEvent_TypeAccountUpdated, &mt.StreamEvent_AccountUpdated{Account: acc}, false); err != nil {

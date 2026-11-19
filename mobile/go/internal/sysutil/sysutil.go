@@ -8,7 +8,7 @@ import (
 	"go.uber.org/multierr"
 	"moul.io/openfiles"
 
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyversion"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshversion"
 	"github.com/core-laboratories/weshnet/v2/pkg/protocoltypes"
 	"github.com/core-laboratories/weshnet/v2/pkg/username"
 )
@@ -37,8 +37,8 @@ func SystemInfoProcess() (*protocoltypes.SystemInfo_Process, error) {
 		NumGoroutine:     int64(runtime.NumGoroutine()),
 		OperatingSystem:  runtime.GOOS,
 		Arch:             runtime.GOARCH,
-		Version:          bertyversion.Version,
-		VcsRef:           bertyversion.VcsRef,
+		Version:          weshversion.Version,
+		VcsRef:           weshversion.VcsRef,
 		Pid:              int64(syscall.Getpid()),
 		Uid:              int64(syscall.Getuid()),
 		Ppid:             int64(syscall.Getppid()),

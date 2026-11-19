@@ -13,7 +13,6 @@ require (
 	github.com/berty/go-libp2p-rendezvous v0.5.1
 	github.com/bufbuild/buf v1.75.0
 	github.com/buicongtan1997/protoc-gen-swagger-config v0.0.0-20200705084907-1342b78c1a7e
-	github.com/campoy/embedmd v1.0.0
 	github.com/core-laboratories/weshnet/v2 v2.3.1
 	github.com/daixiang0/gci v0.14.0
 	github.com/denisbrodbeck/machineid v1.0.1
@@ -25,10 +24,10 @@ require (
 	github.com/githubnemo/CompileDaemon v1.4.0
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/protobuf v1.5.4
 	github.com/grandcat/zeroconf v1.0.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.34.0
 	github.com/hyperledger/aries-framework-go v0.3.2
 	github.com/hyperledger/aries-framework-go/component/storageutil v0.0.0-20240327163625-64dd8acc0750
 	github.com/improbable-eng/grpc-web v0.15.0
@@ -239,6 +238,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/glog v1.2.5 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.5-0.20231225225746-43d5d4cd4e0e // indirect
 	github.com/google/go-containerregistry v0.22.1 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
@@ -249,7 +249,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.27.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.34.0 // indirect
 	github.com/guillaumemichel/reservedpool v0.3.0 // indirect
 	github.com/hack-pad/go-indexeddb v0.3.2 // indirect
 	github.com/hack-pad/safejs v0.1.0 // indirect
@@ -390,7 +389,6 @@ require (
 	github.com/pion/webrtc/v4 v4.1.2 // indirect
 	github.com/pkg/diff v0.0.0-20241224192749-4e6772a4315c // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polydawn/refmt v0.90.0 // indirect
 	github.com/pquerna/cachecontrol v0.2.0 // indirect
 	github.com/probe-lab/go-libdht v0.4.0 // indirect

@@ -20,7 +20,7 @@ import (
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/notification"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/accounttypes"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyaccount"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshaccount"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/mdns"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/osversion"
 	weshgrpcutil "github.com/core-laboratories/weshnet/v2/pkg/grpcutil"
@@ -44,7 +44,7 @@ type Bridge struct {
 	server           *grpc.Server
 	listener         *weshgrpcutil.BufListener
 	accountConn      *grpc.ClientConn
-	serviceAccount   bertyaccount.Service
+	serviceAccount   weshaccount.Service
 	lifecycleManager *lifecycle.Manager
 	netManager       *netmanager.NetManager
 	logger           *zap.Logger
@@ -107,7 +107,7 @@ func NewBridge(config *BridgeConfig) (*Bridge, error) {
 		config.lc.RegisterHandler(bridge)
 	}
 
-	account, err := bertyaccount.NewService(&bertyaccount.Options{
+	account, err := weshaccount.NewService(&weshaccount.Options{
 		AppRootDirectory:      config.AppRootDirPath,
 		SharedRootDirectory:   config.SharedRootDirPath,
 		MDNSLocker:            locker,

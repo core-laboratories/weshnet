@@ -8,7 +8,7 @@ import (
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpcgw "github.com/grpc-ecosystem/grpc-gateway/runtime"
+	grpcgw "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/oklog/run"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -17,8 +17,8 @@ import (
 
 	"github.com/core-laboratories/weshnet/mobile/v2/go/internal/grpcutil"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/authtypes"
-	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/bertyauth"
 	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/errcode"
+	"github.com/core-laboratories/weshnet/mobile/v2/go/pkg/weshauth"
 	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/logutil"
 )
@@ -64,7 +64,7 @@ func InitGRPCServer(workers *run.Group, opts *GRPCOpts) (*grpc.Server, *grpcgw.S
 	authFunc := func(ctx context.Context) (context.Context, error) { return ctx, nil }
 
 	if opts.AuthSecret != "" || opts.AuthPublicKey != "" {
-		man, err := bertyauth.GetAuthTokenVerifier(opts.AuthSecret, opts.AuthPublicKey)
+		man, err := weshauth.GetAuthTokenVerifier(opts.AuthSecret, opts.AuthPublicKey)
 		if err != nil {
 			return nil, nil, nil, errcode.ErrCode_TODO.Wrap(err)
 		}

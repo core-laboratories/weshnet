@@ -142,7 +142,7 @@ func (m *Manager) SetupLocalIPFSFlags(fs *flag.FlagSet) {
 	})
 	m.longHelp = append(m.longHelp, [2]string{
 		"",
-		"-> full list available at https://github.com/berty/berty/tree/master/config)",
+		"-> full list available at https://github.com/berty/wesh/tree/master/config)",
 	})
 }
 
@@ -661,7 +661,7 @@ func (m *Manager) configIPFSRouting(h host.Host, r p2p_routing.Routing) error {
 		}
 	}
 
-	// register berty connmngr bus event
+	// register wesh connmngr bus event
 	if err := m.Node.Protocol.connmngr.RegisterEventBus(h.EventBus()); err != nil {
 		return errcode.ErrCode_ErrIPFSSetupHost.Wrap(err)
 	}

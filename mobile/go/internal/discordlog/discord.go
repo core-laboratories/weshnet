@@ -18,7 +18,7 @@ const (
 )
 
 const (
-	avatarURL = "https://assets.berty.tech/files/developer--berty_developer.png"
+	avatarURL = "https://assets.wesh.tech/files/developer--wesh_developer.png"
 )
 
 // ShareQRLink shares a link as a QR Code on discord.
