@@ -11,8 +11,8 @@ import (
 
 	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
-	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
 	"github.com/core-laboratories/weshnet/v2/pkg/tyber"
+	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 // RequestUsingReaderWriter init a handshake with the responder, using provided io reader and writer

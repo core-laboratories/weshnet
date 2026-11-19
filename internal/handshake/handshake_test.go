@@ -17,8 +17,8 @@ import (
 	"github.com/core-laboratories/weshnet/v2/pkg/cryptoutil"
 	"github.com/core-laboratories/weshnet/v2/pkg/errcode"
 	"github.com/core-laboratories/weshnet/v2/pkg/ipfsutil"
-	"github.com/core-laboratories/weshnet/v2/pkg/protoio"
 	"github.com/core-laboratories/weshnet/v2/pkg/testutil"
+	protoio "github.com/libp2p/go-msgio/pbio"
 )
 
 // Request init a handshake with the responder
