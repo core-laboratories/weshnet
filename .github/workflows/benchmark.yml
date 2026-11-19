@@ -61,25 +61,44 @@ jobs:
         run: |
           mkdir -p pprof_html/head/{cpu,mem}/{top,flamegraph,peek,source}
 
-          go tool pprof -http 0.0.0.0:9402 -no_browser ./cpu_head.prof < /dev/null & # https://github.com/google/pprof/issues/401#issuecomment-739576424
-          sleep 2
-          curl http://localhost:9402/ui/ > pprof_html/head/cpu/index.html
-          curl http://localhost:9402/ui/top > pprof_html/head/cpu/top/index.html
-          curl http://localhost:9402/ui/flamegraph > pprof_html/head/cpu/flamegraph/index.html
-          curl http://localhost:9402/ui/peek > pprof_html/head/cpu/peek/index.html
-          curl http://localhost:9402/ui/source > pprof_html/head/cpu/source/index.html
-          pkill pprof
-          sleep 2
+          generate_profile_html() {
+            local profile="$1"
+            local output="$2"
+            local pprof_pid
+            local ready=0
 
-          go tool pprof -http 0.0.0.0:9402 -no_browser ./mem_head.prof < /dev/null &
-          sleep 2
-          curl http://localhost:9402/ui/ > pprof_html/head/mem/index.html
-          curl http://localhost:9402/ui/top > pprof_html/head/mem/top/index.html
-          curl http://localhost:9402/ui/flamegraph > pprof_html/head/mem/flamegraph/index.html
-          curl http://localhost:9402/ui/peek > pprof_html/head/mem/peek/index.html
-          curl http://localhost:9402/ui/source > pprof_html/head/mem/source/index.html
-          pkill pprof
-          sleep 2
+            go tool pprof -http=127.0.0.1:9402 -no_browser "$profile" < /dev/null &
+            pprof_pid=$!
+            trap 'kill "$pprof_pid" 2>/dev/null || true' EXIT
+
+            for attempt in {1..60}; do
+              if curl --silent --show-error --fail --output /dev/null http://127.0.0.1:9402/ui/ 2>/dev/null; then
+                ready=1
+                break
+              fi
+              if ! kill -0 "$pprof_pid" 2>/dev/null; then
+                echo "pprof exited before serving $profile" >&2
+                return 1
+              fi
+              sleep 1
+            done
+            if [[ "$ready" != 1 ]]; then
+              echo "Timed out waiting for pprof to serve $profile" >&2
+              return 1
+            fi
+
+            curl --fail --silent --show-error http://127.0.0.1:9402/ui/ > "$output/index.html"
+            for view in top flamegraph peek source; do
+              curl --fail --silent --show-error "http://127.0.0.1:9402/ui/$view" > "$output/$view/index.html"
+            done
+
+            kill "$pprof_pid"
+            wait "$pprof_pid" 2>/dev/null || true
+            trap - EXIT
+          }
+
+          generate_profile_html ./cpu_head.prof pprof_html/head/cpu
+          generate_profile_html ./mem_head.prof pprof_html/head/mem
 
           cat << EOF > pprof_html/index.html
           <!DOCTYPE html>
